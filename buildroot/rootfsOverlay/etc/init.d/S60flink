@@ -1,0 +1,44 @@
+#!/bin/sh
+#
+# flink         loads the fpga and starts flink
+#
+
+
+start(){
+        modprobe fpga_loader
+        dd if=/lib/firmware/pathos_fpga_100.rbf of=/dev/fpga_loader bs=4M
+        rmmod fpga_loader
+
+        modprobe flink_eim
+}
+
+stop(){
+        rmmod flink_eim
+        rmmod flink
+}
+
+
+
+restart(){
+        stop
+        start
+}
+
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  restart|reload)
+        restart
+        ;;
+  *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+
+exit $?
+
+#
