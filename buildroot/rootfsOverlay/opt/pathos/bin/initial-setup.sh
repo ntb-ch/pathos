@@ -30,7 +30,10 @@ do
 done
 
 echo "adding data partition to fstab"
-echo "/dev/mmcblk0p2 	/mnt/data	ext4	defaults,noatime 0	2" >> /etc/fstab
+grep /mnt/data /etc/fstab > /dev/null
+if [ $? -ne 0 ]; then
+        echo "/dev/mmcblk0p2    /mnt/data       ext4    defaults,noatime 0      2" >> /etc/fstab
+fi
 
 echo "enabling sudo group"
 sed -i 's/# %sudo/%sudo/' /etc/sudoers
