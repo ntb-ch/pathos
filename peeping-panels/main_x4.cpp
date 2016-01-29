@@ -166,7 +166,6 @@ int main(int argc, char *argv[]) {
 		sequencers[i]->start(mainSequences[i]);
 	}
 	
-// 	double count = 0;
 	bool isTerminated = false;
 	bool runningSeq = true;
 	while(running && runningSeq) {
@@ -180,11 +179,6 @@ int main(int argc, char *argv[]) {
 			prev = prev && istrue;
 		}
 		runningSeq = !prev;
-		
-// 		auto counter = controlSystem.timedomain.counter;
-// 		controlSystem.timedomain.counter.reset();
-// 		std::cout << "p = " << counter.period.mean << " | " << counter.period.max << std::endl;
-// 		std::cout << "r = " << counter.run.min << " | " << counter.run.mean << " | " << counter.run.max << std::endl;
 	}
 
 	// Safe control system shut down

@@ -101,15 +101,15 @@ void MainSequence_x4::run() {
 		}
 		else if(input_cmd == "direction") {
 			peep_direction = input_data;
-			peep_out_s.setPeepDirection(peep_direction);
+// 			peep_out_s.setPeepDirection(peep_direction);
 		}
 		else if(input_cmd == "peep") {
 			peep_position = input_data;
 			
 			// set parameters
 			controlSys->pathPlanner.setMaxSpeed(peep_speed);
-			peep_out_s.setPeepAngle(peep_position);
-			peep_out_s.setPeepDirection(peep_direction);
+// 			peep_out_s.setPeepAngle(peep_position);
+// 			peep_out_s.setPeepDirection(peep_direction);
 			
 			int count = 0;
 			while(count < 3){

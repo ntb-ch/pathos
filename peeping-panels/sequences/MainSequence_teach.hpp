@@ -4,9 +4,6 @@
 #include <eeros/sequencer/Sequence.hpp>
 #include <eeros/safety/SafetySystem.hpp>
 #include "../control/PeepingPanelControlSystem.hpp"
-
-#include "Peep_out.hpp"
-#include "Peep_in.hpp"
 #include "Teaching.hpp"
 
 namespace pathos {

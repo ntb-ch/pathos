@@ -69,15 +69,6 @@ namespace pathos {
 				// critical inputs
 				std::vector<eeros::hal::ScalablePeripheralInput<double>*> enc;
 				std::vector<eeros::hal::PeripheralInput<bool>*> readySig;
-// 				eeros::hal::ScalablePeripheralInput<double>* enc1;
-// 				eeros::hal::ScalablePeripheralInput<double>* enc2;
-// 				eeros::hal::ScalablePeripheralInput<double>* enc3;
-// 				eeros::hal::ScalablePeripheralInput<double>* enc4;
-// 				
-// 				eeros::hal::PeripheralInput<bool>* ready1;
-// 				eeros::hal::PeripheralInput<bool>* ready2;
-// 				eeros::hal::PeripheralInput<bool>* ready3;
-// 				eeros::hal::PeripheralInput<bool>* ready4;
 
 			private:
 				std::vector<PeepingPanelControlSystem*> controlSystems;
