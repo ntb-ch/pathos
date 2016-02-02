@@ -2,13 +2,16 @@ cmake_minimum_required(VERSION 2.8)
 
 project(peeping-panels)
 
-include_directories(/home/eeros/efs/efs/build-arm/eeros)
-include_directories(/home/eeros/efs/efs/eeros/includes)
-include_directories(/home/eeros/efs/efs/flink/include)
-include_directories(/home/eeros/pathos/Software/Colibri/pathoslib/include/)
-link_directories(/home/eeros/efs/efs/build-arm/eeros/src/)
-link_directories(/home/eeros/efs/efs/build-arm/flink/lib/)
-link_directories(/home/eeros/pathos/Software/Colibri/pathoslib/build-arm)
+find_package(EEROS REQUIRED)
+include_directories(${EEROS_INCLUDE_DIR})
+link_directories(${EEROS_LIB_DIR})
+
+find_package(flink REQUIRED)
+include_directories(${FLINK_INCLUDE_DIR})
+link_directories(${FLINK_LIB_DIR})
+
+include_directories(${ADDITIONAL_INCLUDE_DIRS})
+link_directories(${ADDITIONAL_LINK_DIRS})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
