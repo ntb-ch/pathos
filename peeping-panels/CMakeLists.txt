@@ -24,6 +24,8 @@ add_executable(peeping-panels-4 main_x4.cpp  control/PeepingPanelControlSystem.c
                                              sequences/Peep_out.cpp     
                                              sequences/Peep_in.cpp             )   
 target_link_libraries(peeping-panels-4 eeros pathos)
+INSTALL(TARGETS peeping-panels-4 RUNTIME DESTINATION bin)
+
 
 # Executable, teaching
 add_executable(peeping-panels-teach main_teach.cpp control/PeepingPanelControlSystem.cpp  
@@ -32,6 +34,7 @@ add_executable(peeping-panels-teach main_teach.cpp control/PeepingPanelControlSy
                                                    control/PathPlanner.cpp
                                                    sequences/Teaching.cpp       )   
 target_link_libraries(peeping-panels-teach eeros pathos)
+INSTALL(TARGETS peeping-panels-teach RUNTIME DESTINATION bin)
 
 # Executable, peeping
 add_executable(peeping-panels-peep main_peep.cpp  control/PeepingPanelControlSystem.cpp  
@@ -41,10 +44,12 @@ add_executable(peeping-panels-peep main_peep.cpp  control/PeepingPanelControlSys
                                                   sequences/Peep_out.cpp   
                                                   sequences/Peep_in.cpp         )   
 target_link_libraries(peeping-panels-peep eeros pathos)
+INSTALL(TARGETS peeping-panels-peep RUNTIME DESTINATION bin)
 
 # Encoder test
 add_executable(test-enc test/encoder/testEncoder.cpp)
 target_link_libraries(test-enc eeros pathos)
+INSTALL(TARGETS test-enc RUNTIME DESTINATION bin)
 
 # # New path planner test
 # add_executable(test-new-pp test/newpathplanner/testPathPlanner_new.cpp   
