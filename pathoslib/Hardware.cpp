@@ -55,6 +55,11 @@ Hardware::Hardware() :
 	hal.addPeripheralOutput(&dac3);
 	hal.addPeripheralOutput(&dac4);
 	
+	dac1.set(0.0);
+	dac2.set(0.0);
+	dac3.set(0.0);
+	dac4.set(0.0);
+
 	hal.addPeripheralOutput(&enableDrv);
 	hal.addPeripheralInput(&readySig1);
 	hal.addPeripheralInput(&readySig2);
