@@ -150,22 +150,22 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(int config, std
 	
 	// ############ Define Levels ############
 	levels = {
-		{ off,             "System off",                       },
-		{ swInitializing,  "SW initializing",                  },
-		{ swInitialized,   "SW initialized",                   },
-		{ emergency,       "EMERGENCY",                        },
-		{ resetEmergency,  "reset EMERGENCY",                  },
-		{ controlStopping, "Stopping control system",          },
-		{ controlStarting, "Starting control system",          },
-		{ systemOn,        "Control System started",           },
-		{ poweringDown,    "Powering down drives",             },
-		{ poweringUp,      "Powering up drives",               },
-		{ powerOn,         "Drives powered up",                },
-		{ homing,          "Homing panels",                    },
-		{ homed,           "Panels homed",                     },
-		{ goingToReady,    "Going to ready position",          },
-		{ ready,           "Panels are ready to peep",         },
-	 	{ teaching,        "Teaching trajectory to panels",    },
+		{ off,             "System off",                        },
+		{ swInitializing,  "SW initializing",                   },
+		{ swInitialized,   "SW initialized",                    },
+		{ emergency,       "EMERGENCY",                         },
+		{ resetEmergency,  "reset EMERGENCY",                   },
+		{ controlStopping, "Stopping control system",           },
+		{ controlStarting, "Starting control system",           },
+		{ systemOn,        "Control System started - System On" },
+		{ poweringDown,    "Powering down drives",              },
+		{ poweringUp,      "Powering up drives",                },
+		{ powerOn,         "Drives powered up",                 },
+		{ homing,          "Homing panels",                     },
+		{ homed,           "Panels homed",                      },
+		{ goingToReady,    "Going to ready position",           },
+		{ ready,           "Panels are ready to peep",          },
+	 	{ teaching,        "Teaching trajectory to panels",     },
 	};
 	
 	// ############ Add events to the levels ############
@@ -203,6 +203,8 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(int config, std
 	level(controlStarting ).setInputActions({ /*ignore(enc1), check(ready1, false, doEmergency)*/ });
 	level(systemOn        ).setInputActions({ /*ignore(enc1), check(ready1, false, doEmergency)*/ });
 	level(poweringDown    ).setInputActions({ /*ignore(enc1), check(ready1, false, doEmergency)*/ });
+// 	for (auto &e : enc)
+// 		level(poweringUp      ).setInputActions({  ignore(e)/*, check(ready1, false, doEmergency)*/ });
 	level(poweringUp      ).setInputActions({ /*ignore(enc1), check(ready1, false, doEmergency)*/ });
 	level(powerOn         ).setInputActions({ /*ignore(enc1), check(ready1, false, doEmergency)*/ });
 	level(homing          ).setInputActions({ /*ignore(enc1), check(ready1, false, doEmergency)*/ });
@@ -309,7 +311,7 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(int config, std
 				cs->speedInit.setValue(initialization_speed);
 			first = false;
 		}
-			
+		
 		// Check if initialized
 		for(int i = 0; i < controlSystems.size(); i++){
 			auto dac = controlSystems[i]->dac.getIn().getSignal().getValue();
@@ -320,13 +322,6 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(int config, std
 				controlSystems[i]->initAngle = controlSystems[i]->enc.getOut().getSignal().getValue();
 			}
 		}
-		
-// 		static int count = 0;
-// 		if(count > 1000){
-// 			std::cout << homed[0] << "; " << homed[1] << "; " << homed[2] << "; " << homed[3] << std::endl;
-// 			count = 0;
-// 		}
-// 		else count++;
 		
 		// Check if all axes are homed
 		if(allTrue(homed)) privateContext->triggerEvent(homingDone);

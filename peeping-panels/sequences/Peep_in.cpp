@@ -2,7 +2,7 @@
 #include <eeros/safety/SafetySystem.hpp>
 #include <unistd.h>
 #include "../control/PeepingPanelControlSystem.hpp"
-#include "../safety/PeepingPanelSafetyProperties.hpp"
+#include "../safety/PeepingPanelSafetyProperties_x4.hpp"
 #include "../constants.hpp"
 
 #include <iostream>

@@ -2,7 +2,7 @@
 #include <eeros/safety/SafetySystem.hpp>
 #include <unistd.h>
 #include "../control/PeepingPanelControlSystem.hpp"
-#include "../safety/PeepingPanelSafetyProperties.hpp"
+#include "../safety/PeepingPanelSafetyProperties_x4.hpp"
 #include "../constants.hpp"
 
 #include <iostream>
@@ -35,7 +35,7 @@ void Peep_out::run() {
 	AxisVector final_pos = peepDirection * peepAngle;
 	AxisVector pos = final_pos - actual_pos;
 
-	controlSys->pathPlanner.move("curve_input1.txt", 5.0, pos);
+	controlSys->pathPlanner.move(filename, time, pos);
 	while (!controlSys->pathPlanner.posReached() && safetySys->getCurrentLevel().getId() == ready) {
 		usleep(100000);
 		if (isTerminating()) return;
@@ -60,10 +60,24 @@ inline bool Peep_out::isStopping() {
 // 	return !(safetySys->getCurrentLevel().getId() == goingToReady);
 }
 
-inline void Peep_out::setPeepAngle(double angle) {
-	peepAngle = angle;
-}
+inline void Peep_out::setMotionCurve(std::string fn, double t, double angle, char direction) {
+	filename = fn;
+	
+	if(t > 0.0)
+		time = t;
+	else
+		log.warn() << "Wrong peeping time set, time must be positive";
+	
+	if(angle >= -0.087 && angle <= 1.60)
+		peepAngle = angle;
+	else
+		log.warn() << "Wrong peeping angle set (enter angle in rad between -0.087 and 1.60)";
+	
+	if(direction == 'r')
+		peepDirection = -1.0; 
+	else if(direction == 'l')
+		peepDirection =  1.0; 
+	else
+		log.warn() << "Wrong peeping direction set ('r' or 'l')";
 
-inline void Peep_out::setPeepDirection(double direction) {
-	peepDirection = direction;
 }

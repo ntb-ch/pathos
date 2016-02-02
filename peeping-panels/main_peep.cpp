@@ -8,16 +8,20 @@
 #include <eeros/logger/SysLogWriter.hpp>
 #include <eeros/sequencer/Sequencer.hpp>
 #include <pathos/Hardware.hpp>
+#include <eeros/core/EEROSException.hpp>
+
 #include "control/PeepingPanelControlSystem.hpp"
 #include "safety/PeepingPanelSafetyProperties_x4.hpp"
-#include "sequences/MainSequence_teach.hpp"
+#include "sequences/MainSequence_peep.hpp"
+#include "constants.hpp"
 
 using namespace eeros::logger;
+using namespace eeros::hal;
+using namespace pathos;
+using namespace pathos::peepingpanel;
 using namespace eeros::control;
 using namespace eeros::safety;
 using namespace eeros::sequencer;
-using namespace pathos;
-using namespace pathos::peepingpanel;
 
 volatile bool running = true;
 void signalHandler(int signum) {
@@ -36,10 +40,10 @@ int main(int argc, char *argv[]) {
 	// Create vector of control systems and sequencers
 	std::vector<PeepingPanelControlSystem*> controlSystems;
 	std::vector<Sequencer*> sequencers;
-	std::vector<MainSequence_teach*> mainSequences;
+	std::vector<MainSequence_peep*> mainSequences;
 	int config = 0;
 	
-		// Initializing hardware
+	// Initializing hardware
 	Hardware h;
 	
 	// Read input argument & Create Control Systems
@@ -155,7 +159,7 @@ int main(int argc, char *argv[]) {
 	// Get and Start Sequencer
 	for (int i = 0; i < controlSystems.size(); i++){
 		sequencers.push_back(new Sequencer);
-		mainSequences.push_back(new MainSequence_teach(sequencers[i], controlSystems[i], &safetySystem));
+		mainSequences.push_back(new MainSequence_peep(sequencers[i], controlSystems[i], &safetySystem));
 		sequencers[i]->start(mainSequences[i]);
 	}
 	
@@ -167,7 +171,7 @@ int main(int argc, char *argv[]) {
 		bool prev = true;
 		for (int i = 0; i < sequencers.size(); i++){
 			bool istrue;
-			if (sequencers[i]->getState() == state::terminated){ istrue = true; std::cout << "terminated" << std::endl;}
+			if (sequencers[i]->getState() == state::terminated) istrue = true;
 			else      istrue = false;
 			prev = prev && istrue;
 		}

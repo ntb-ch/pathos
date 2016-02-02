@@ -14,7 +14,6 @@
 #include <eeros/control/Saturation.hpp>
 
 #include "PathPlanner.hpp"
-#include "SerialInput.hpp"
 
 namespace pathos {
 	namespace peepingpanel {

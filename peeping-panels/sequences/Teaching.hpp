@@ -2,7 +2,6 @@
 #define CH_NTB_PEEPINGPANEL_TEACHING_HPP_
 
 #include "../control/PeepingPanelControlSystem.hpp"
-#include "../safety/PeepingPanelSafetyProperties.hpp"
 #include <eeros/sequencer/Sequence.hpp>
 #include <eeros/safety/SafetySystem.hpp>
 #include "../types.hpp"

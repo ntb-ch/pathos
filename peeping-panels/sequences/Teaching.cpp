@@ -1,5 +1,5 @@
 #include "../control/PeepingPanelControlSystem.hpp"
-#include "../safety/PeepingPanelSafetyProperties.hpp"
+#include "../safety/PeepingPanelSafetyProperties_x4.hpp"
 #include "Teaching.hpp"
 #include <eeros/safety/SafetySystem.hpp>
 #include <unistd.h>
