@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
 	
 	// Check if input argument is missing
 	if(argc < 2)
-		throw eeros::EEROSException("Missing input argument - config mode");
+		throw eeros::EEROSException("Missing input argument - motors connected");
 	
 	// Create vector of control systems and sequencers
 	std::vector<PeepingPanelControlSystem*> controlSystems;

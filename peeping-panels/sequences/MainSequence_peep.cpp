@@ -26,7 +26,7 @@ void MainSequence_peep::run() {
 		usleep(100000); if (isTerminating()) return; }
 
 	// Set parameters (file name, time, angle, peep direction)
-	peep_out_s.setMotionCurve("curve_input1.txt", 1.0, 1.04, 'r');
+	peep_out_s.setMotionCurve("/mnt/data/curves/curve_input1.txt", 1.0, 1.04, 'r');
 
 	// Run peeping sequences
 	peep_out_s();

@@ -30,7 +30,7 @@ void Teaching::run() {
 	log.info() << "[ Teaching ] started";
 	
 	// Get file name
-	log.info() << "Enter file name, where you want to save your trajectory points (filename.txt)";
+	log.info() << "Enter file name, where you want to save your trajectory points (path/filename.txt)";
 	// Read input string 
 	std::string line;
 	std::getline(std::cin, line);
