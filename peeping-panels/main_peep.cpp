@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include <signal.h>
+#include <iostream>
 
 #include <eeros/safety/SafetySystem.hpp>
 #include <eeros/logger/Logger.hpp>
