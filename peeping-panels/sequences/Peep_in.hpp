@@ -20,12 +20,13 @@ namespace pathos {
 			virtual bool checkPostCondition();
 			virtual void exit();
 			
-			virtual void setPeepAngle(double angle);
-			virtual void setPeepDirection(double direction);
+			virtual void setMotionCurve(std::string fn, double t);
 			
 		private:
-			double peepAngle = 0.0; 
-			double peepDirection = 1.0;
+// 			double peepAngle = 0.0; 
+// 			double peepDirection = 1.0;
+			double time = 1.0;
+			std::string filename;
 			
 			bool isTerminating();
 			bool isStopping();

@@ -113,8 +113,9 @@ void MainSequence_x4::run() {
 			while(count < 3){
 				// peep 
 				peep_out_s.setMotionCurve("/mnt/data/curves/curve_input1.txt", 1.0, 1.04, 'r');
-				peep_out_s();
+				peep_in_s.setMotionCurve("/mnt/data/curves/curve_input1.txt", 1.0);
 				
+				peep_out_s();
 				peep_in_s(); 
 				
 				sleep(1.0);

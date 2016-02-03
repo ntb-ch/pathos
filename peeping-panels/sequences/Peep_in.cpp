@@ -35,7 +35,7 @@ void Peep_in::run() {
 	AxisVector final_pos = ready_pos;
 	AxisVector pos = final_pos - actual_pos;
 
-	controlSys->pathPlanner.move("curve_input1.txt", 0.6, pos);
+	controlSys->pathPlanner.move(filename, time, pos);
 	while (!controlSys->pathPlanner.posReached() && safetySys->getCurrentLevel().getId() == ready) {
 		usleep(100000);
 		if (isTerminating()) return;
@@ -69,10 +69,12 @@ inline bool Peep_in::isStopping() {
 // 	return !(safetySys->getCurrentLevel().getId() == goingToReady);
 }
 
-inline void Peep_in::setPeepAngle(double angle) {
-	peepAngle = angle;
-}
+inline void Peep_in::setMotionCurve(std::string fn, double t) {
+	filename = fn;
+	
+	if(t > 0.0)
+		time = t;
+	else
+		log.warn() << "Wrong peeping time set, time must be positive";
 
-inline void Peep_in::setPeepDirection(double direction) {
-	peepDirection = direction;
 }
