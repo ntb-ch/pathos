@@ -36,7 +36,6 @@ if [ $? -ne 0 ]; then
 	resize2fs /dev/mmcblk0p3
 fi
 
-
 echo "enabling sudo group"
 sed -i 's/# %sudo/%sudo/' /etc/sudoers
 
