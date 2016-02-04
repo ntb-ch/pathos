@@ -40,7 +40,7 @@ void MainSequence_x4::run() {
 	configFile.load();
 	
 	// Set default variables
-	peep_speed = configFile.peep_speed;
+	peep_time = configFile.peep_time;	
 	if(configFile.peep_direction == 1.0 || configFile.peep_direction == -1.0)
 		peep_direction = configFile.peep_direction;
 	else  {
@@ -50,7 +50,7 @@ void MainSequence_x4::run() {
 	peep_position = configFile.peep_position;
 	
 	log.info() << "Parameters loaded: "; 
-	log.info() << "Peep speed: " << peep_speed << "\t Peep direction: " << peep_direction << "\t Peep position: "  << peep_position ;
+	log.info() << "Peep time: " << peep_time << "\t Peep direction: " << peep_direction << "\t Peep position: "  << peep_position ;
 		
 	while(safetySys->getCurrentLevel().getId() < ready) {    // power up & home
 		usleep(100000); if (isTerminating()) return; }
@@ -58,11 +58,10 @@ void MainSequence_x4::run() {
 	char m = 0;
 	while (m != 'q') {
 		// List options
-		log.info() << "speed     value = set peeping speed";
-		log.info() << "direction r/l   = set peeping direction";
-		log.info() << "peep      value = set peeping position and peep";
-		log.info() << "teach           = teach a new trajectory";
-		log.info() << "quit            = exit program";
+		log.info() << "time value = set peeping time";
+		log.info() << "peep value = set peeping position and peep";
+		log.info() << "teach      = teach a new trajectory";
+		log.info() << "quit       = exit program";
 	
 		std::string input_cmd, in_data;
 		
@@ -80,49 +79,33 @@ void MainSequence_x4::run() {
 		
 		// Conversion string to double (if needed) and conversion l/r -> +/- 1
 		double input_data;
-		if(input_cmd == "speed" || input_cmd == "peep" || input_cmd == "peepshy" || input_cmd == "peepfast" || input_cmd == "peepslow") {
+		if(input_cmd == "time" || input_cmd == "peep") {
 			std::string in = in_data;
 			std::string::size_type sz;  
 			input_data = std::stod(in, &sz);
-		}
-		else if(input_cmd == "direction") {
-			if(in_data == "l")
-				input_data =  1.0;
-			else
-				input_data = -1.0;
 		}
 		else
 			input_data = 0.0;
 		
 		// Set commands for switch case
-		if(input_cmd == "speed") {
-			peep_speed = input_data; 
-			controlSys->pathPlanner.setMaxSpeed(peep_speed);
-		}
-		else if(input_cmd == "direction") {
-			peep_direction = input_data;
-// 			peep_out_s.setPeepDirection(peep_direction);
+		if(input_cmd == "time") {
+			peep_time = input_data; 
 		}
 		else if(input_cmd == "peep") {
 			peep_position = input_data;
 			
-			// set parameters
-			controlSys->pathPlanner.setMaxSpeed(peep_speed);
-			
 			int count = 0;
-			while(count < 3){
-				// peep 
-				peep_out_s.setMotionCurve("/mnt/data/curves/curve_input1.txt", 1.0, 1.04, 'r');
-				peep_in_s.setMotionCurve("/mnt/data/curves/curve_input1.txt", 1.0);
-				
+			while(count < 1){
+				// Setting parameters of peeping motions
+				peep_out_s.setMotionCurve("/mnt/data/curves/curve_input1.txt", peep_time, peep_position, 'r');
+				peep_in_s.setMotionCurve("/mnt/data/curves/curve_input1.txt" , peep_time);
+				// Peep 
 				peep_out_s();
 				peep_in_s(); 
 				
 				sleep(1.0);
 				count++;
-			}
-			m = 'q';
-			log.info() << "finished sequence";
+			}	
 		}
 		else if(input_cmd == "teach") {
 			safetySys->triggerEvent(doTeaching);  
@@ -147,11 +130,11 @@ void MainSequence_x4::run() {
 		// save parameters
 		configFile.peep_direction = peep_direction;
 		configFile.peep_position = peep_position;
-		configFile.peep_speed = peep_speed;
+		configFile.peep_time = peep_time;
 		configFile.save();
 		
 		log.info() << "Parameters saved: ";
-		log.info() << "Config peep speed: "     << configFile.peep_speed     ;
+		log.info() << "Config peep speed: "     << configFile.peep_time     ;
 		log.info() << "Config peep direction: " << configFile.peep_direction ;
 		log.info() << "Config peep position: "  << configFile.peep_position  ;
 	}

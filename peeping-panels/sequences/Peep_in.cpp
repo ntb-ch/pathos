@@ -76,5 +76,5 @@ inline void Peep_in::setMotionCurve(std::string fn, double t) {
 		time = t;
 	else
 		log.warn() << "Wrong peeping time set, time must be positive";
-
+	
 }

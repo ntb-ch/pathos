@@ -8,12 +8,12 @@ using namespace eeros;
 class PeepingPanelConfig : public SimpleConfig {
 	public:
 		PeepingPanelConfig(const char *name) : SimpleConfig(name) {
-			add("peepSpeed"    , peep_speed);
+			add("peepTime"     , peep_time);
 			add("peepDirection", peep_direction);
 			add("peepPosition" , peep_position);
 		}
 
-		double peep_speed;
+		double peep_time;
 		double peep_direction; 
 		double peep_position; 
 };

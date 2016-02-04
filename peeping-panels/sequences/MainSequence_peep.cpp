@@ -25,9 +25,14 @@ void MainSequence_peep::run() {
 	while(safetySys->getCurrentLevel().getId() < ready) {    // power up & home
 		usleep(100000); if (isTerminating()) return; }
 
+	// PARAMETERS TO SET
+	double peep_time = 1.0;
+	double peep_angle = 1.04;
+	char peep_direction = 'r';
+		
 	// Set parameters (file name, time, angle, peep direction)
-	peep_out_s.setMotionCurve("/mnt/data/curves/curve_input1.txt", 1.0, 1.04, 'r');
-	peep_in_s.setMotionCurve("/mnt/data/curves/curve_input1.txt", 1.0);
+	peep_out_s.setMotionCurve("/mnt/data/curves/curve_input1.txt", peep_time, peep_angle, peep_direction);
+	peep_in_s.setMotionCurve("/mnt/data/curves/curve_input1.txt" , peep_time);
 
 	// Run peeping sequences
 	peep_out_s();

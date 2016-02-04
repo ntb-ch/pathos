@@ -31,7 +31,7 @@ namespace pathos {
 			peepingpanel::PeepingPanelControlSystem* controlSys;
 			eeros::safety::SafetySystem* safetySys;
 			
-			double peep_speed, peep_position, peep_direction;
+			double peep_time, peep_position, peep_direction;
 		};
 	};
 };

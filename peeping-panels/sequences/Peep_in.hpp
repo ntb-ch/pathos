@@ -23,8 +23,6 @@ namespace pathos {
 			virtual void setMotionCurve(std::string fn, double t);
 			
 		private:
-// 			double peepAngle = 0.0; 
-// 			double peepDirection = 1.0;
 			double time = 1.0;
 			std::string filename;
 			

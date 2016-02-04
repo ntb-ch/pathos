@@ -79,5 +79,5 @@ inline void Peep_out::setMotionCurve(std::string fn, double t, double angle, cha
 		peepDirection =  1.0; 
 	else
 		log.warn() << "Wrong peeping direction set ('r' or 'l')";
-
+	
 }
