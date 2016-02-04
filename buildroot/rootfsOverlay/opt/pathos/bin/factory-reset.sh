@@ -21,5 +21,7 @@ mount -a
 chown pathos:users /mnt/data
 chmod a+rw /mnt/data
 
+cp -r /opt/pathos/curves /mnt/data
+
 reboot
 
