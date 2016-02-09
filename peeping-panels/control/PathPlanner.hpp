@@ -29,6 +29,7 @@ namespace pathos {
 			virtual void setMaxAcc(AxisVector acc);
 			virtual void setMaxDec(AxisVector dec);
 			
+			virtual void reset();
 			virtual void run();
 		
 // 		protected:
@@ -37,7 +38,7 @@ namespace pathos {
 			eeros::control::Output<AxisVector> accOut;
 			eeros::control::Output<AxisVector> jerkOut;
 			
-			std::mutex mtx;
+// 			std::mutex mtx;
 			
 			virtual bool calculateCoefficients_fromPosition();
 			virtual bool calculateCoefficients_fromJerk();

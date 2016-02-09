@@ -69,11 +69,11 @@ void MainSequence_x4::run() {
 		std::string line;
 		std::getline(std::cin, line);
 		std::size_t pos = line.find(' ');
-		if (pos != std::string::npos) {
+		if (pos != std::string::npos){
 			input_cmd = line.substr(0, pos); 
 			in_data = line.substr(pos+1);
 		} 
-		else {
+		else{
 			input_cmd = line;
 		}
 		

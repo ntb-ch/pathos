@@ -29,6 +29,13 @@ Output<AxisVector>& PathPlanner::getJerkOut() {
 	return jerkOut;
 }
 
+void PathPlanner::reset() {
+	this->finish = true;
+	
+	coefficients.zero();
+	segment_set = false;
+}
+
 bool PathPlanner::move(AxisVector p, bool limitOn) {
 	if(!finish)
 		return false;
@@ -39,7 +46,7 @@ bool PathPlanner::move(AxisVector p, bool limitOn) {
 	
 	this->points_nr = 1.0;
 	
-	std::lock_guard<std::mutex> lck(mtx);
+// 	std::lock_guard<std::mutex> lck(mtx);
 	if(calculateCoefficients_fromPosition()){
 		finish = false;
 		finish_segment = false;
@@ -81,7 +88,7 @@ bool PathPlanner::move(std::array<AxisVector, 100> array, bool limitOn) {
 	
 	this->points_nr = nr_in_points;
 		
-	std::lock_guard<std::mutex> lck(mtx);
+// 	std::lock_guard<std::mutex> lck(mtx);
 	if(calculateCoefficients_fromPosition()){
 		finish = false;
 		finish_segment = false;
@@ -143,7 +150,7 @@ bool PathPlanner::move(std::string filename, double time_tot, AxisVector end_pos
 	// Calculate coefficients like matlab program
 	calculateCoefficients_fromJerk();
 	
-	std::lock_guard<std::mutex> lck(mtx);
+// 	std::lock_guard<std::mutex> lck(mtx);
 	finish = false;
 	finish_segment = false;
 	t = 0;
@@ -269,7 +276,7 @@ bool PathPlanner::calculateCoefficients_fromJerk() {
 }
 
 bool PathPlanner::posReached() {
-	std::lock_guard<std::mutex> lck(mtx);
+// 	std::lock_guard<std::mutex> lck(mtx);
 	return finish;
 }
 
@@ -281,14 +288,14 @@ void PathPlanner::setInitPos(AxisVector initPos) {
 	r[2] = z;
 	r[3] = z;
 
-	std::lock_guard<std::mutex> lck(mtx);
+// 	std::lock_guard<std::mutex> lck(mtx);
 	this->last = r;
 	this->finish = true;
 }
 
 void PathPlanner::run() {
 	// get()
-	std::lock_guard<std::mutex> lck(mtx);
+// 	std::lock_guard<std::mutex> lck(mtx);
 	std::array<AxisVector, 4> y = this->last;
 	timestamp_t time = System::getTimeNs();	
 	t += dt;

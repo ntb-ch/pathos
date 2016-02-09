@@ -35,13 +35,31 @@ void Peep_out::run() {
 	AxisVector final_pos = peepDirection * peepAngle;
 	AxisVector pos = final_pos - actual_pos;
 
+	bool reset = false;
+	int count = 0;
 	controlSys->pathPlanner.move(filename, time, pos);
 	while (!controlSys->pathPlanner.posReached() && safetySys->getCurrentLevel().getId() == ready) {
 		usleep(100000);
 		if (isTerminating()) return;
 		if (isStopping()) break;
+		count = count +1;
+		if(count == 5){
+			log.info() << "reset";
+			controlSys->pathPlanner.reset();
+			reset = true;
+			break;
+		}
 	}
-	sleep(0.5);
+	if(reset){
+		// Back to ready position
+		controlSys->pathPlanner.move(ready_pos, true);
+		while (!controlSys->pathPlanner.posReached() && safetySys->getCurrentLevel().getId() == ready) {
+			usleep(100000);
+			if (isTerminating()) return;
+			if (isStopping()) break;
+		}
+	}
+// 	sleep(0.5);
 }
 
 bool Peep_out::checkPostCondition() {
@@ -57,7 +75,7 @@ inline bool Peep_out::isTerminating() {
 }
 
 inline bool Peep_out::isStopping() {
-// 	return !(safetySys->getCurrentLevel().getId() == goingToReady);
+// 	return controlSys->sensorsData.getOut().getSignal()
 }
 
 inline void Peep_out::setMotionCurve(std::string fn, double t, double angle, char direction) {
@@ -79,5 +97,13 @@ inline void Peep_out::setMotionCurve(std::string fn, double t, double angle, cha
 		peepDirection =  1.0; 
 	else
 		log.warn() << "Wrong peeping direction set ('r' or 'l')";
-	
 }
+
+// inline void Peep_out::getSensorsActions() {
+// 	sensorData = controlSys->getSensorData();
+/*	
+	if (sensorData == visible) -> suddenly interrupt && go To in
+	else if (sensorData == far) -> suddenly interrupt and k
+	
+	
+}*/

@@ -51,31 +51,14 @@ add_executable(test-enc test/encoder/testEncoder.cpp)
 target_link_libraries(test-enc eeros pathos)
 INSTALL(TARGETS test-enc RUNTIME DESTINATION bin)
 
-# # New path planner test
-# add_executable(test-new-pp test/newpathplanner/testPathPlanner_new.cpp   
-#                            test/newpathplanner/TestControlSystem.cpp
-#                            test/newpathplanner/TestSafetyProperties.cpp
-#                            control/PathPlanner.cpp                        )
-# target_link_libraries(test-new-pp eeros pathos)
-
-# # Old path planner test
-# add_executable(test-old-pp test/oldpathplanner/testPathPlanner_old.cpp   
-#                            test/oldpathplanner/TestControlSystem.cpp
-#                            test/oldpathplanner/TestSafetyProperties.cpp
-#                            control/PathPlanner_old.cpp                    )
-# target_link_libraries(test-old-pp eeros pathos)
-
-# # Drive board test
-# add_executable(test-driveboard test/driveboard/testDriveBoard.cpp   
-#                                test/driveboard/TestControlSystem.cpp
-#                                test/driveboard/TestSafetyProperties.cpp 
-#                                control/PathPlanner.cpp                     )
-# target_link_libraries(test-driveboard eeros pathos)
-
-# # Control system test
-# add_executable(test-control test/controlsystem/testCS.cpp   
-#                             test/controlsystem/TestControlSystem.cpp
-#                             test/controlsystem/TestSafetyProperties.cpp 
-#                              control/PathPlanner.cpp   
-#                              control/Filter.cpp                            )
-# target_link_libraries(test-control eeros pathos)
+# Behaviour test
+add_executable(test-behaviour test/behaviour/testBehaviour.cpp control/PeepingPanelControlSystem.cpp  
+                                                               control/PathPlanner.cpp
+                                                               safety/PeepingPanelSafetyProperties_x4.cpp
+                                                               test/behaviour/MainSequence_behaviour.cpp
+                                                               sequences/Peep_out.cpp   
+                                                               sequences/Peep_in.cpp   
+                                                               sequences/Teaching.cpp   
+                                                                                                          )
+target_link_libraries(test-behaviour eeros pathos)
+INSTALL(TARGETS test-behaviour RUNTIME DESTINATION bin)
