@@ -60,7 +60,7 @@ namespace pathos {
 		class PeepingPanelSafetyProperties_x4 : public eeros::safety::SafetyProperties {
 
 			public:
-				PeepingPanelSafetyProperties_x4(int config, std::vector<PeepingPanelControlSystem*> cs);
+				PeepingPanelSafetyProperties_x4(std::vector<PeepingPanelControlSystem*> cs, std::array<double,4> configData);
 				virtual ~PeepingPanelSafetyProperties_x4();
 			
 				// critical outputs
@@ -77,7 +77,7 @@ namespace pathos {
 				virtual bool allTrue(std::array<bool,4> v);
 				virtual bool isPosErrorZero();
 				
-				int config = 0;
+				std::array<double,4> configData;
 				double err = 0.00001;
 				char buffer[1024];	
 		};

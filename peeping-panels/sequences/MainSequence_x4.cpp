@@ -19,11 +19,23 @@ using namespace eeros::sequencer;
 using namespace eeros::safety;
 // using namespace eeros::math;
 
-MainSequence_x4::MainSequence_x4(Sequencer* sequencer, PeepingPanelControlSystem* controlSys, SafetySystem* safetySys) :
+MainSequence_x4::MainSequence_x4(Sequencer* sequencer, PeepingPanelControlSystem* controlSys, SafetySystem* safetySys, std::array<double,4> configData) :
 							Sequence<void>("main", sequencer), controlSys(controlSys), safetySys(safetySys),
 							peep_out_s(sequencer, controlSys, safetySys), peep_in_s(sequencer, controlSys, safetySys), 
 							teaching_s(sequencer, controlSys, safetySys) {
-	// nothing to do
+	
+	peep_time = configData[1];
+	
+	if(configData[2] == -1.0)
+		peep_direction = 'r'; 
+	else //configData[2] == 1.0
+		peep_direction =  'l'; 
+
+	peep_angle     = configData[3];
+	
+// 	peep_time      = configData[1];
+// 	peep_direction = configData[2];
+// 	peep_position  = configData[3];
 }
 
 bool MainSequence_x4::checkPreCondition() {
@@ -32,26 +44,9 @@ bool MainSequence_x4::checkPreCondition() {
 
 void MainSequence_x4::run() {
 	log.trace() << "Sequencer '" << name << "': started.";
+
+	log.info() << peep_time << "; " << peep_direction << "; " << peep_angle ;
 	
-	// Loading configuration file
-	log.info() << "Loading configuration file"; 
-	std::string fileName("/mnt/data/curves/config.txt");        
-	PeepingPanelConfig configFile(fileName.c_str());
-	configFile.load();
-	
-	// Set default variables
-	peep_time = configFile.peep_time;	
-	if(configFile.peep_direction == 1.0 || configFile.peep_direction == -1.0)
-		peep_direction = configFile.peep_direction;
-	else  {
-		peep_direction = 1.0;
-		log.warn() << "Wrong direction input"; 
-	}
-	peep_position = configFile.peep_position;
-	
-	log.info() << "Parameters loaded: "; 
-	log.info() << "Peep time: " << peep_time << "\t Peep direction: " << peep_direction << "\t Peep position: "  << peep_position ;
-		
 	while(safetySys->getCurrentLevel().getId() < ready) {    // power up & home
 		usleep(100000); if (isTerminating()) return; }
 	
@@ -92,12 +87,12 @@ void MainSequence_x4::run() {
 			peep_time = input_data; 
 		}
 		else if(input_cmd == "peep") {
-			peep_position = input_data;
+			peep_angle = input_data;
 			
 			int count = 0;
 			while(count < 1){
 				// Setting parameters of peeping motions
-				peep_out_s.setMotionCurve("/mnt/data/curves/curve_input1.txt", peep_time, peep_position, 'r');
+				peep_out_s.setMotionCurve("/mnt/data/curves/curve_input1.txt", peep_time, peep_angle, peep_direction);
 				peep_in_s.setMotionCurve("/mnt/data/curves/curve_input1.txt" , peep_time);
 				// Peep 
 				peep_out_s();
@@ -119,27 +114,6 @@ void MainSequence_x4::run() {
 		else
 			log.info() << "Invalid command, try again";
 	}
-
-	// Save parameters to config file
-	log.info() << "Do you want to save parameters on config file? [yes/no]";
-		
-	// Read input string
-	std::string line;
-	std::getline(std::cin, line);	
-	if(line == "yes") {
-		// save parameters
-		configFile.peep_direction = peep_direction;
-		configFile.peep_position = peep_position;
-		configFile.peep_time = peep_time;
-		configFile.save();
-		
-		log.info() << "Parameters saved: ";
-		log.info() << "Config peep speed: "     << configFile.peep_time     ;
-		log.info() << "Config peep direction: " << configFile.peep_direction ;
-		log.info() << "Config peep position: "  << configFile.peep_position  ;
-	}
-	else
-		log.info() << "Parameters not saved";
 }
 
 void MainSequence_x4::exit() {

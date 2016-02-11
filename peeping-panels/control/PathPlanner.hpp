@@ -3,8 +3,9 @@
 
 #include <eeros/control/Block.hpp>
 #include <eeros/control/Output.hpp>
-#include <mutex>
+#include <atomic>
 #include "../types.hpp"
+#include <array>
 
 namespace pathos {
 	namespace peepingpanel {
@@ -38,8 +39,6 @@ namespace pathos {
 			eeros::control::Output<AxisVector> accOut;
 			eeros::control::Output<AxisVector> jerkOut;
 			
-// 			std::mutex mtx;
-			
 			virtual bool calculateCoefficients_fromPosition();
 			virtual bool calculateCoefficients_fromJerk();
 			
@@ -53,7 +52,7 @@ namespace pathos {
 			int points_nr;
 			int segments_nr;
 		
-			bool finish = true;
+			std::atomic<bool> finish; // = true;
 			bool finish_segment = true;
 			bool segment_set = false;
 			bool jerk_limit_on = false;

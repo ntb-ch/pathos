@@ -20,50 +20,48 @@ using namespace eeros;
 using namespace eeros::hal;
 using namespace eeros::safety;
 
-PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(int config, std::vector<PeepingPanelControlSystem*> cs) : 
-	controlSystems(cs), config(config)  {
+PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(std::vector<PeepingPanelControlSystem*> cs, std::array<double,4> configData) : 
+	configData(configData), controlSystems(cs)  {
 		
 	HAL& hal = HAL::instance();
 
 	// ############ Define critical outputs ############
 	enable = hal.getLogicPeripheralOutput("enableDrv");
-	
 	criticalOutputs = { enable };
 	
 	// ############ Define critical inputs ############
 
-	if(config == 1){               // 0 0 0 1
+	if(configData[0] == 1){              // 0 0 0 1
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
 		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
 	}
-	else if (config == 2) {        // 0 0 1 0
-		config = 2;
+	else if (configData[0] == 2) {       // 0 0 1 0
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
 		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
 	}
-	else if (config == 3) {       // 0 0 1 1
+	else if (configData[0] == 3) {       // 0 0 1 1
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
 		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
 		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
 	}
-	else if (config == 4) {       // 0 1 0 0
+	else if (configData[0] == 4) {       // 0 1 0 0
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
 		readySig.push_back(hal.getLogicPeripheralInput("readySig2"));
 	}
-	else if (config == 5) {       // 0 1 0 1
+	else if (configData[0] == 5) {       // 0 1 0 1
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
 		readySig.push_back(hal.getLogicPeripheralInput("readySig2"));
 		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
 	}
-	else if (config == 6) {       // 0 1 1 0
+	else if (configData[0] == 6) {       // 0 1 1 0
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
 		readySig.push_back(hal.getLogicPeripheralInput("readySig2"));
 		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
 	}
-	else if (config == 7) {      // 0 1 1 1
+	else if (configData[0] == 7) {       // 0 1 1 1
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
@@ -71,23 +69,23 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(int config, std
 		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
 		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
 	}
-	else if (config == 8) {     // 1 0 0 0
+	else if (configData[0] == 8) {       // 1 0 0 0
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
 		readySig.push_back(hal.getLogicPeripheralInput("readySig1"));
 	}
-	else if (config == 9) {     // 1 0 0 1
+	else if (configData[0] == 9) {       // 1 0 0 1
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
 		readySig.push_back(hal.getLogicPeripheralInput("readySig1"));
 		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
 	}
-	else if (config == 10) {     // 1 0 1 0
+	else if (configData[0] == 10) {      // 1 0 1 0
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
 		readySig.push_back(hal.getLogicPeripheralInput("readySig1"));
 		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
 	}
-	else if (config == 11) {      // 1 0 1 1
+	else if (configData[0] == 11) {      // 1 0 1 1
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
@@ -95,13 +93,13 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(int config, std
 		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
 		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
 	}
-	else if (config == 12) {     // 1 1 0 0
+	else if (configData[0] == 12) {      // 1 1 0 0
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
 		readySig.push_back(hal.getLogicPeripheralInput("readySig1"));
 		readySig.push_back(hal.getLogicPeripheralInput("readySig2"));
 	}
-	else if (config == 13) {     // 1 1 0 1
+	else if (configData[0] == 13) {      // 1 1 0 1
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
@@ -109,7 +107,7 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(int config, std
 		readySig.push_back(hal.getLogicPeripheralInput("readySig2"));
 		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
 	}
-	else if (config == 14) {    // 1 1 1 0
+	else if (configData[0] == 14) {      // 1 1 1 0
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
@@ -117,7 +115,7 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(int config, std
 		readySig.push_back(hal.getLogicPeripheralInput("readySig2"));
 		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
 	}
-	else if (config == 15) {    // 1 1 1 1 
+	else if (configData[0] == 15) {      // 1 1 1 1 
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
 		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
@@ -132,21 +130,9 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(int config, std
 	}
 	
 	for (auto &e : enc)
-			criticalInputs.push_back(e);
+		criticalInputs.push_back(e);
 	for (auto &r : readySig)
-			criticalInputs.push_back(r);
-
-// 	enc1  = dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1"));
-// 	enc2  = dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2"));
-// 	enc3  = dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3"));
-// 	enc4  = dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4"));
-// 	
-// 	ready1 = hal.getLogicPeripheralInput("readySig1");
-// 	ready2 = hal.getLogicPeripheralInput("readySig2");
-// 	ready3 = hal.getLogicPeripheralInput("readySig3");
-// 	ready4 = hal.getLogicPeripheralInput("readySig4");
-	
-// 	criticalInputs = { enc1, enc2, enc3, enc4, ready1, ready2, ready3, ready4};
+		criticalInputs.push_back(r);
 	
 	// ############ Define Levels ############
 	levels = {
@@ -308,7 +294,7 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(int config, std
 		// Set initialization speed (set speed only first time)
 		if(first) {
 			for (auto &cs : controlSystems)
-				cs->speedInit.setValue(initialization_speed);
+				cs->speedInit.setValue(initialization_speed * configData[2]); // configData[2] = peep_direction
 			first = false;
 		}
 		
@@ -322,7 +308,6 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(int config, std
 				controlSystems[i]->initAngle = controlSystems[i]->enc.getOut().getSignal().getValue();
 			}
 		}
-		
 		// Check if all axes are homed
 		if(allTrue(homed)) privateContext->triggerEvent(homingDone);
 	});
@@ -331,9 +316,9 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(int config, std
 		if(homedCounter++ > 0) { 
 			if(firstHoming && !robotHomed) {
 				// Set encoder offset
-				for (auto &cs : controlSystems)
-					cs->enc_offset.setValue( -cs->initAngle + init_pos * i);
-				
+				for (auto &cs : controlSystems){
+					cs->enc_offset.setValue( (cs->initAngle - init_pos * i) * configData[2]);
+				}
 				// Set safety system variables
 				firstHoming = false;
 				robotHomed = true;

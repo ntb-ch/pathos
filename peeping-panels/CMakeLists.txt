@@ -51,14 +51,14 @@ add_executable(test-enc test/encoder/testEncoder.cpp)
 target_link_libraries(test-enc eeros pathos)
 INSTALL(TARGETS test-enc RUNTIME DESTINATION bin)
 
-# Behaviour test
-add_executable(test-behaviour test/behaviour/testBehaviour.cpp control/PeepingPanelControlSystem.cpp  
-                                                               control/PathPlanner.cpp
-                                                               safety/PeepingPanelSafetyProperties_x4.cpp
-                                                               test/behaviour/MainSequence_behaviour.cpp
-                                                               sequences/Peep_out.cpp   
-                                                               sequences/Peep_in.cpp   
-                                                               sequences/Teaching.cpp   
-                                                                                                          )
-target_link_libraries(test-behaviour eeros pathos)
-INSTALL(TARGETS test-behaviour RUNTIME DESTINATION bin)
+# # Behaviour test
+# add_executable(test-behaviour test/behaviour/testBehaviour.cpp control/PeepingPanelControlSystem.cpp  
+#                                                                control/PathPlanner.cpp
+#                                                                safety/PeepingPanelSafetyProperties_x4.cpp
+#                                                                test/behaviour/MainSequence_behaviour.cpp
+#                                                                sequences/Peep_out.cpp   
+#                                                                sequences/Peep_in.cpp   
+#                                                                sequences/Teaching.cpp   
+#                                                                                                           )
+# target_link_libraries(test-behaviour eeros pathos)
+# INSTALL(TARGETS test-behaviour RUNTIME DESTINATION bin)

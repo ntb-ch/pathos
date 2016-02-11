@@ -15,7 +15,8 @@ namespace pathos {
 		class MainSequence_x4 : public eeros::sequencer::Sequence<void> {
 
 		public:
-			MainSequence_x4(eeros::sequencer::Sequencer* sequencer, PeepingPanelControlSystem* controlSys, eeros::safety::SafetySystem* safetySys);
+			MainSequence_x4(eeros::sequencer::Sequencer* sequencer, PeepingPanelControlSystem* controlSys, 
+							eeros::safety::SafetySystem* safetySys, std::array<double,4> configData);
 			
 			virtual bool checkPreCondition();
 			virtual void run();
@@ -31,7 +32,8 @@ namespace pathos {
 			peepingpanel::PeepingPanelControlSystem* controlSys;
 			eeros::safety::SafetySystem* safetySys;
 			
-			double peep_time, peep_position, peep_direction;
+			double peep_time, peep_angle;
+			char peep_direction;
 		};
 	};
 };

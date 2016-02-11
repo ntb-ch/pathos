@@ -11,6 +11,7 @@ PathPlanner::PathPlanner(AxisVector velMax, AxisVector accMax, AxisVector decMax
                          velMax(velMax), accMax(accMax), decMax(decMax), dt(dt) {
 	coefficients.zero();
 	coefficients.transpose();
+	finish = true;
 }
 
 Output<AxisVector>& PathPlanner::getPosOut() {
@@ -46,7 +47,6 @@ bool PathPlanner::move(AxisVector p, bool limitOn) {
 	
 	this->points_nr = 1.0;
 	
-// 	std::lock_guard<std::mutex> lck(mtx);
 	if(calculateCoefficients_fromPosition()){
 		finish = false;
 		finish_segment = false;
@@ -88,7 +88,6 @@ bool PathPlanner::move(std::array<AxisVector, 100> array, bool limitOn) {
 	
 	this->points_nr = nr_in_points;
 		
-// 	std::lock_guard<std::mutex> lck(mtx);
 	if(calculateCoefficients_fromPosition()){
 		finish = false;
 		finish_segment = false;
@@ -115,7 +114,7 @@ bool PathPlanner::move(std::string filename, double time_tot, AxisVector end_pos
 	
 	std::fstream file;
 	file.open(filename, std::fstream::in);
-	if(!file.is_open()) throw EEROSException("File for loading ref. systems is not open!");
+	if(!file.is_open()) throw EEROSException("File for loading trajectory!");
 
 	std::array<double, 100> input_time; 
 	std::array<double, 100> input_jerk; 
@@ -139,6 +138,58 @@ bool PathPlanner::move(std::string filename, double time_tot, AxisVector end_pos
 		input_jerk[j] = input_jerk[j] * end_position / (time_tot*time_tot*time_tot);
 	}
 	
+	double rounded_points_nr = 0;
+	std::array<double, 100> rounded_input_time; 
+	std::array<double, 100> rounded_input_jerk; 
+	std::array<double, 100> dT;
+	std::array<double, 100> rest;
+	std::array<int   , 100> rest2;
+	
+	double timePrev = 0.0;
+	for(int j = 0; j < points_nr; j++){
+		// check if time intervals are multiple of sample time
+		if(j == 0) {dT[j] = input_time[j];          }
+		else       {dT[j] = dT[j-1] + input_time[j];}
+			
+		rest[j]  = dT[j] / dt;                              
+		rest2[j] = static_cast<int>(std::floor(rest[j]));
+		
+		double roundDown;
+		if(rest[j] != rest2[j]) {
+			// calculate variation in "next init values" to be saved
+			roundDown = rest2[j]*dt - timePrev;
+			rounded_input_time[rounded_points_nr] = roundDown;
+			rounded_input_jerk[rounded_points_nr] = input_jerk[j];
+		
+			double t1 = dT[j]-timePrev-roundDown; 
+			double t2 = (dt-t1);
+			if(j < points_nr -1) {
+				rounded_input_time[rounded_points_nr+1] = dt;
+				rounded_input_jerk[rounded_points_nr+1] = (input_jerk[j] * t1 + input_jerk[j+1] * t2)/ dt;
+			}
+			
+			// update indexes
+			timePrev = dT[j] + t2; 
+			if(j < points_nr -1) rounded_points_nr = rounded_points_nr + 2;
+			else rounded_points_nr = rounded_points_nr + 1;
+		}
+		else{
+			rounded_input_time[rounded_points_nr] = dT[j] - timePrev;   //input_time[j];
+			rounded_input_jerk[rounded_points_nr] = input_jerk[j];
+		
+			// update indexes
+			timePrev = timePrev + rounded_input_time[rounded_points_nr];
+			rounded_points_nr = rounded_points_nr + 1;
+		}
+	}
+	points_nr = rounded_points_nr;
+	
+	// final settings
+	for(int j = 0; j < points_nr; j++){
+		input_time[j] = rounded_input_time[j];
+		input_jerk[j] = rounded_input_jerk[j];
+	}
+	
 	// save time and jerk into coefficients
 	int j = 0;
 	while (j < points_nr) {
@@ -150,7 +201,6 @@ bool PathPlanner::move(std::string filename, double time_tot, AxisVector end_pos
 	// Calculate coefficients like matlab program
 	calculateCoefficients_fromJerk();
 	
-// 	std::lock_guard<std::mutex> lck(mtx);
 	finish = false;
 	finish_segment = false;
 	t = 0;
@@ -276,7 +326,6 @@ bool PathPlanner::calculateCoefficients_fromJerk() {
 }
 
 bool PathPlanner::posReached() {
-// 	std::lock_guard<std::mutex> lck(mtx);
 	return finish;
 }
 
@@ -288,14 +337,12 @@ void PathPlanner::setInitPos(AxisVector initPos) {
 	r[2] = z;
 	r[3] = z;
 
-// 	std::lock_guard<std::mutex> lck(mtx);
 	this->last = r;
 	this->finish = true;
 }
 
 void PathPlanner::run() {
 	// get()
-// 	std::lock_guard<std::mutex> lck(mtx);
 	std::array<AxisVector, 4> y = this->last;
 	timestamp_t time = System::getTimeNs();	
 	t += dt;

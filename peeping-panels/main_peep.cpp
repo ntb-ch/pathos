@@ -13,6 +13,7 @@
 #include "control/PeepingPanelControlSystem.hpp"
 #include "safety/PeepingPanelSafetyProperties_x4.hpp"
 #include "sequences/MainSequence_peep.hpp"
+#include "PeepingPanelConfig.hpp"
 #include "constants.hpp"
 
 using namespace eeros::logger;
@@ -150,8 +151,28 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
+	// *** Loading configuration file *** //
+	std::cout << "Loading configuration file"  << std::endl; 
+	std::string fileName("/mnt/data/curves/config.txt");        
+	PeepingPanelConfig configFile(fileName.c_str());
+	configFile.load();
+		
+	std::array<double, 4> configArray; // motorconfig, time, direction, position
+	// config motors
+	configArray[0] = config;
+	// peep time
+	configArray[1] = configFile.peep_time;
+	// peep direction
+	if(configFile.peep_direction == 1.0 || configFile.peep_direction == -1.0) {
+		configArray[2] = configFile.peep_direction;
+	}
+	else
+		throw EEROSException("Wrong direction input, check input file");
+	// peep position
+	configArray[3] = configFile.peep_position;
+	
 	// Create the safety system
-	PeepingPanelSafetyProperties_x4 safetyProperties(config, controlSystems);
+	PeepingPanelSafetyProperties_x4 safetyProperties(controlSystems, configArray);
 	SafetySystem safetySystem(safetyProperties, dt);
 	
 	Logger<LogWriter>::setDefaultWriter(&w);
@@ -159,7 +180,7 @@ int main(int argc, char *argv[]) {
 	// Get and Start Sequencer
 	for (int i = 0; i < controlSystems.size(); i++){
 		sequencers.push_back(new Sequencer);
-		mainSequences.push_back(new MainSequence_peep(sequencers[i], controlSystems[i], &safetySystem));
+		mainSequences.push_back(new MainSequence_peep(sequencers[i], controlSystems[i], &safetySystem, configArray));
 		sequencers[i]->start(mainSequences[i]);
 	}
 	

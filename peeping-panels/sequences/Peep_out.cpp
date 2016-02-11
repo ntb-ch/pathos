@@ -42,13 +42,13 @@ void Peep_out::run() {
 		usleep(100000);
 		if (isTerminating()) return;
 		if (isStopping()) break;
-		count = count +1;
-		if(count == 5){
-			log.info() << "reset";
-			controlSys->pathPlanner.reset();
-			reset = true;
-			break;
-		}
+// 		count = count +1;
+// 		if(count == 5){
+// 			log.info() << "reset";
+// 			controlSys->pathPlanner.reset();
+// 			reset = true;
+// 			break;
+// 		}
 	}
 	if(reset){
 		// Back to ready position
