@@ -149,6 +149,7 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(std::vector<Pee
 		{ powerOn,         "Drives powered up",                 },
 		{ homing,          "Homing panels",                     },
 		{ homed,           "Panels homed",                      },
+		{ sleeping,        "Panels sleeping (homed)"            },
 		{ goingToReady,    "Going to ready position",           },
 		{ ready,           "Panels are ready to peep",          },
 	 	{ teaching,        "Teaching trajectory to panels",     },
@@ -170,10 +171,12 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(std::vector<Pee
 	level(powerOn         ).addEvent(doHoming,            homing,           kPublicEvent  ); 
 	level(homing          ).addEvent(homingDone,          homed,            kPublicEvent  ); 
 	level(homed           ).addEvent(doReady,             goingToReady,     kPublicEvent  ); 
+	level(sleeping        ).addEvent(doAwake,             ready,            kPublicEvent  ); 
 	level(goingToReady    ).addEvent(readyDone,           ready,            kPublicEvent  ); 
 	level(ready           ).addEvent(doPoweringDown,      poweringDown,     kPublicEvent  );
 	level(ready           ).addEvent(doTeaching,          teaching,         kPublicEvent  );
 	level(ready           ).addEvent(doReady,             goingToReady,     kPublicEvent  );
+	level(ready           ).addEvent(doSleep,             sleeping,         kPublicEvent  );
 	level(teaching        ).addEvent(doReady,             goingToReady,     kPublicEvent  ); 
 	
 	// Add events to multiple levels
@@ -198,6 +201,7 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(std::vector<Pee
 	level(goingToReady    ).setInputActions({ /*ignore(enc1), check(ready1, false, doEmergency)*/ });
 	level(ready           ).setInputActions({ /*ignore(enc1), check(ready1, false, doEmergency)*/ });
 	level(teaching        ).setInputActions({ /*ignore(enc1), check(ready1, false, doEmergency)*/ });
+	level(sleeping        ).setInputActions({ /*ignore(enc1), check(ready1, false, doEmergency)*/ });
 
 	// Define output states and events for all levels 
 	level(off             ).setOutputActions({ set(enable, false) }); 
@@ -213,6 +217,7 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(std::vector<Pee
 	level(powerOn         ).setOutputActions({ set(enable, true ) });
 	level(homing          ).setOutputActions({ set(enable, true ) });
 	level(homed           ).setOutputActions({ set(enable, false) });
+	level(sleeping        ).setOutputActions({ set(enable, false) });
 	level(goingToReady    ).setOutputActions({ set(enable, true ) });  
 	level(ready           ).setOutputActions({ set(enable, true ) }); 
 	level(teaching        ).setOutputActions({ set(enable, false) });
@@ -299,15 +304,19 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(std::vector<Pee
 		}
 		
 		// Check if initialized
-		for(int i = 0; i < controlSystems.size(); i++){
-			auto dac = controlSystems[i]->dac.getIn().getSignal().getValue();
-			if(dac<-0.8 || dac>0.8) homed[i] = true;
-			
-			if(homed[i]){
-				controlSystems[i]->speedInit.setValue(0.0);
-				controlSystems[i]->initAngle = controlSystems[i]->enc.getOut().getSignal().getValue();
+		static int count = 0;
+		if(count > 500){
+			for(int i = 0; i < controlSystems.size(); i++){
+				auto dac = controlSystems[i]->dac.getIn().getSignal().getValue();
+				if(dac<-initialization_dac_lim || dac>initialization_dac_lim) homed[i] = true;
+				
+				if(homed[i]){
+					controlSystems[i]->speedInit.setValue(0.0);
+					controlSystems[i]->initAngle = controlSystems[i]->enc.getOut().getSignal().getValue();
+				}
 			}
 		}
+		count++;
 		// Check if all axes are homed
 		if(allTrue(homed)) privateContext->triggerEvent(homingDone);
 	});
