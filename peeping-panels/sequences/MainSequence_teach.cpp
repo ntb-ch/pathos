@@ -1,7 +1,7 @@
 #include "MainSequence_teach.hpp"
 #include <eeros/safety/SafetySystem.hpp>
-#include "../safety/PeepingPanelSafetyProperties_x4.hpp"
-#include "../control/PeepingPanelControlSystem.hpp"
+#include "../safety/SafetyProperties_Teach.hpp"
+#include "../control/ControlSystem_Teach.hpp"
 #include <unistd.h>
 
 using namespace eeros;
@@ -9,7 +9,7 @@ using namespace eeros::sequencer;
 using namespace eeros::safety;
 using namespace pathos::peepingpanel;
 
-MainSequence_teach::MainSequence_teach(Sequencer* sequencer, PeepingPanelControlSystem* controlSys, SafetySystem* safetySys) :
+MainSequence_teach::MainSequence_teach(Sequencer* sequencer, ControlSystem_Teach* controlSys, SafetySystem* safetySys) :
 							Sequence<void>("main", sequencer), controlSys(controlSys), safetySys(safetySys),
 							teaching_s(sequencer, controlSys, safetySys) {
 	// nothing to do

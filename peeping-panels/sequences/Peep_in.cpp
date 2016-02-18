@@ -1,8 +1,8 @@
 #include "Peep_in.hpp"
 #include <eeros/safety/SafetySystem.hpp>
 #include <unistd.h>
-#include "../control/PeepingPanelControlSystem.hpp"
-#include "../safety/PeepingPanelSafetyProperties_x4.hpp"
+#include "../control/ControlSystem_Peep.hpp"
+#include "../safety/SafetyProperties_Peep.hpp"
 #include "../constants.hpp"
 
 #include <iostream>
@@ -12,7 +12,7 @@ using namespace eeros::control;
 using namespace eeros::sequencer;
 using namespace eeros::safety;
 
-Peep_in::Peep_in(Sequencer* sequencer, PeepingPanelControlSystem* controlSys, SafetySystem* safetySys) : 
+Peep_in::Peep_in(Sequencer* sequencer, ControlSystem_Peep* controlSys, SafetySystem* safetySys) : 
 		Sequence<>("main", sequencer), controlSys(controlSys), safetySys(safetySys) {
 	// nothing to do
 }
@@ -31,7 +31,7 @@ void Peep_in::run() {
 	AxisVector vel; vel = 30.0;
 	controlSys->pathPlanner.setMaxSpeed(vel);
 	
-	AxisVector actual_pos = controlSys->sum_enc_offset.getOut().getSignal().getValue()(0) / i;
+	AxisVector actual_pos = controlSys->sum_enc_offset.getOut().getSignal().getValue()(0) / i_gear;
 	AxisVector final_pos = ready_pos;
 	AxisVector pos = final_pos - actual_pos;
 

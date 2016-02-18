@@ -3,7 +3,7 @@
 
 #include <eeros/sequencer/Sequence.hpp>
 #include <eeros/safety/SafetySystem.hpp>
-#include "../control/PeepingPanelControlSystem.hpp"
+#include "../control/ControlSystem_Teach.hpp"
 #include "Teaching.hpp"
 
 namespace pathos {
@@ -12,7 +12,7 @@ namespace pathos {
 		class MainSequence_teach : public eeros::sequencer::Sequence<void> {
 
 		public:
-			MainSequence_teach(eeros::sequencer::Sequencer* sequencer, PeepingPanelControlSystem* controlSys, eeros::safety::SafetySystem* safetySys);
+			MainSequence_teach(eeros::sequencer::Sequencer* sequencer, ControlSystem_Teach* controlSys, eeros::safety::SafetySystem* safetySys);
 			
 			virtual bool checkPreCondition();
 			virtual void run();
@@ -23,7 +23,7 @@ namespace pathos {
 			
 			bool isTerminating();
 			
-			peepingpanel::PeepingPanelControlSystem* controlSys;
+			peepingpanel::ControlSystem_Teach* controlSys;
 			eeros::safety::SafetySystem* safetySys;
 		};
 	};

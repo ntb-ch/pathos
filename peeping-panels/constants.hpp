@@ -13,7 +13,7 @@ namespace pathos {
 		static constexpr double dt = 0.001; //0.002;
 		static constexpr unsigned int nofAxis = 1;
 		
-		static constexpr double i = 6.4;                                               // Gear ratio
+		static constexpr double i_gear = 6.4;                                               // Gear ratio
 		static constexpr double km = 25.1*pow(10.0, -3.0);                             // Motor constant [Nm/A]
 // 		static constexpr double J_motor = 135.0*pow(10.0, -7.0) + 1.84*pow(10.0, -4.0);  // Motor+Additional Mass inertia [kgm²]
 		static constexpr double J_motor = 135.0*pow(10.0, -7.0) + 1.70*pow(10.0, -4.0);  // Motor+Additional Mass inertia [kgm²]

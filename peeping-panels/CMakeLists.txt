@@ -15,41 +15,42 @@ link_directories(${ADDITIONAL_LINK_DIRS})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-# Executable, program from 1 to 4 motors
-add_executable(peeping-panels-4 main_x4.cpp  control/PeepingPanelControlSystem.cpp  
-                                             safety/PeepingPanelSafetyProperties_x4.cpp
-                                             sequences/MainSequence_x4.cpp
-                                             control/PathPlanner.cpp
-                                             sequences/Teaching.cpp    
-                                             sequences/Peep_out.cpp     
-                                             sequences/Peep_in.cpp             )   
-target_link_libraries(peeping-panels-4 eeros pathos)
-INSTALL(TARGETS peeping-panels-4 RUNTIME DESTINATION bin)
-
+add_executable(configExample configExample.cpp)
+target_link_libraries(configExample eeros pthread)
 
 # Executable, teaching
-add_executable(peeping-panels-teach main_teach.cpp control/PeepingPanelControlSystem.cpp  
-                                                   safety/PeepingPanelSafetyProperties_x4.cpp
-                                                   sequences/MainSequence_teach.cpp
-                                                   control/PathPlanner.cpp
-                                                   sequences/Teaching.cpp       )   
-target_link_libraries(peeping-panels-teach eeros pathos)
-INSTALL(TARGETS peeping-panels-teach RUNTIME DESTINATION bin)
+add_executable(teach main_teach.cpp
+                     control/ControlSystem_Peep.cpp     # needed, not used 
+                     control/ControlSystem_Teach.cpp  
+                     control/PathPlanner.cpp
+                     control/ReadSensorData.cpp         # needed, not used 
+                     sensors/SensorsThread.cpp          # needed, not used 
+                     safety/SafetyProperties_Teach.cpp
+                     sequences/MainSequence_teach.cpp        
+                     sequences/Teaching.cpp   
+               )
+target_link_libraries(teach eeros pathos)
+INSTALL(TARGETS teach RUNTIME DESTINATION bin)
 
 # Executable, peeping
-add_executable(peeping-panels-peep main_peep.cpp  control/PeepingPanelControlSystem.cpp  
-                                                  safety/PeepingPanelSafetyProperties_x4.cpp
-                                                  sequences/MainSequence_peep.cpp
-                                                  control/PathPlanner.cpp
-                                                  sequences/Peep_out.cpp   
-                                                  sequences/Peep_in.cpp         )   
-target_link_libraries(peeping-panels-peep eeros pathos)
-INSTALL(TARGETS peeping-panels-peep RUNTIME DESTINATION bin)
+add_executable(peep main_peep.cpp  
+                                   control/ControlSystem_Peep.cpp  
+                                   control/ControlSystem_Teach.cpp    # needed, not used
+                                   control/PathPlanner.cpp
+                                   control/ReadSensorData.cpp
+                                   sensors/SensorsThread.cpp
+                                   safety/SafetyProperties_Peep.cpp
+                                   sequences/MainSequence_peep.cpp
+                                   sequences/Peep_out.cpp   
+                                   sequences/Peep_in.cpp                                                              
+              )   
+target_link_libraries(peep eeros pathos)
+INSTALL(TARGETS peep RUNTIME DESTINATION bin)
 
-# Encoder test
-add_executable(test-enc test/encoder/testEncoder.cpp)
-target_link_libraries(test-enc eeros pathos)
-INSTALL(TARGETS test-enc RUNTIME DESTINATION bin)
+# # Encoder test
+# add_executable(test-enc test/encoder/testEncoder.cpp)
+# target_link_libraries(test-enc eeros pathos)
+# INSTALL(TARGETS test-enc RUNTIME DESTINATION bin)
 
 # # Behaviour test
 # add_executable(test-behaviour test/behaviour/testBehaviour.cpp control/PeepingPanelControlSystem.cpp  

@@ -1,5 +1,5 @@
-#ifndef CH_NTB_PEEPINGPANEL_CURRENTCONTROLSYSTEM_HPP_
-#define CH_NTB_PEEPINGPANEL_CURRENTCONTROLSYSTEM_HPP_
+#ifndef CH_NTB_PEEPINGPANEL_CONTROLSYSTEMTEACH_HPP_
+#define CH_NTB_PEEPINGPANEL_CONTROLSYSTEMTEACH_HPP_
  
 #include <eeros/control/TimeDomain.hpp>
 #include <eeros/control/PeripheralInput.hpp>
@@ -18,10 +18,10 @@
 namespace pathos {
 	namespace peepingpanel {
  
-		class PeepingPanelControlSystem {
+		class ControlSystem_Teach {
 		
 			public:
-				PeepingPanelControlSystem(std::string enc, std::string dac);
+				ControlSystem_Teach(std::string enc, std::string dac);
 			
 				void start(); // starts timedomains
 				void stop();  // stops timedomains
@@ -68,4 +68,4 @@ namespace pathos {
 	};
 }; 
  
-#endif //CH_NTB_PEEPINGPANEL_CURRENTCONTROLSYSTEM_HPP_
+#endif //CH_NTB_PEEPINGPANEL_CONTROLSYSTEMTEACH_HPP_

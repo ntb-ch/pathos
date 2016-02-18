@@ -1,5 +1,5 @@
-#ifndef CH_NTB_PEEPINGPANEL_SAFETYPROPERTIES_HPP_
-#define CH_NTB_PEEPINGPANEL_SAFETYPROPERTIES_HPP_
+#ifndef CH_NTB_PEEPINGPANEL_SAFETYPROPERTIESPEEP_HPP_
+#define CH_NTB_PEEPINGPANEL_SAFETYPROPERTIESPEEP_HPP_
 
 #include <eeros/safety/SafetyProperties.hpp>
 #include <eeros/hal/HAL.hpp>
@@ -10,7 +10,7 @@
 namespace pathos {
 	namespace peepingpanel{
 	
-		class PeepingPanelControlSystem;
+		class ControlSystem_Peep;
 		
 		// Define events
 		enum {
@@ -60,11 +60,11 @@ namespace pathos {
 			teaching = 25,
 		};
 		
-		class PeepingPanelSafetyProperties_x4 : public eeros::safety::SafetyProperties {
+		class SafetyProperties_Peep : public eeros::safety::SafetyProperties {
 
 			public:
-				PeepingPanelSafetyProperties_x4(std::vector<PeepingPanelControlSystem*> cs, std::array<double,4> configData);
-				virtual ~PeepingPanelSafetyProperties_x4();
+				SafetyProperties_Peep(std::vector<ControlSystem_Peep*> cs, std::array<double,13> configIn);
+				virtual ~SafetyProperties_Peep();
 			
 				// critical outputs
 				eeros::hal::PeripheralOutput<bool>* enable;
@@ -74,16 +74,19 @@ namespace pathos {
 				std::vector<eeros::hal::PeripheralInput<bool>*> readySig;
 
 			private:
-				std::vector<PeepingPanelControlSystem*> controlSystems;
+				std::vector<ControlSystem_Peep*> controlSystems;
 				                         
 				virtual bool isDacZero();
 				virtual bool allTrue(std::array<bool,4> v);
 				virtual bool isPosErrorZero();
+				virtual std::vector<double> setPeepDirection(std::array<double,13> configData);
+				virtual std::vector<eeros::hal::ScalablePeripheralInput<double>*> setEncoderInputs(std::array<double,13> configData, eeros::hal::HAL& hal);
+				virtual std::vector<eeros::hal::PeripheralInput<bool>*> setReadyInputs(std::array<double,13> configData, eeros::hal::HAL& hal);
 				
-				std::array<double,4> configData;
+				std::array<double,13> configData;
+				std::vector<double> peep_direction;
 				double err = 0.00001;
-				char buffer[1024];	
 		};
 	};
 };
-#endif // CH_NTB_PEEPINGPANEL_SAFETYPROPERTIES_HPP_
+#endif // CH_NTB_PEEPINGPANEL_SAFETYPROPERTIESPEEP_HPP_

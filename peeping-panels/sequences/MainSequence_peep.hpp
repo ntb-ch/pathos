@@ -3,7 +3,7 @@
 
 #include <eeros/sequencer/Sequence.hpp>
 #include <eeros/safety/SafetySystem.hpp>
-#include "../control/PeepingPanelControlSystem.hpp"
+#include "../control/ControlSystem_Peep.hpp"
 
 #include "Peep_out.hpp"
 #include "Peep_in.hpp"
@@ -14,7 +14,7 @@ namespace pathos {
 		class MainSequence_peep : public eeros::sequencer::Sequence<void> {
 
 		public:
-			MainSequence_peep(eeros::sequencer::Sequencer* sequencer, PeepingPanelControlSystem* controlSys, eeros::safety::SafetySystem* safetySys, std::array<double,4> configData);
+			MainSequence_peep(eeros::sequencer::Sequencer* sequencer, ControlSystem_Peep* controlSys, eeros::safety::SafetySystem* safetySys, std::array<double,3> configData);
 			
 			virtual bool checkPreCondition();
 			virtual void run();
@@ -26,9 +26,10 @@ namespace pathos {
 			
 			bool isTerminating();
 			
-			peepingpanel::PeepingPanelControlSystem* controlSys;
+			peepingpanel::ControlSystem_Peep* controlSys;
 			eeros::safety::SafetySystem* safetySys;
 			
+			// configData = time, direction, position
 			double peep_time, peep_angle;
 			char peep_direction;
 		};

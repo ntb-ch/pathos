@@ -1,7 +1,7 @@
 #ifndef CH_NTB_PEEPINGPANEL_PEEPOUT_HPP_
 #define CH_NTB_PEEPINGPANEL_PEEPOUT_HPP_
 
-#include "../control/PeepingPanelControlSystem.hpp"
+#include "../control/ControlSystem_Peep.hpp"
 #include <eeros/sequencer/Sequence.hpp>
 #include <eeros/safety/SafetySystem.hpp>
 
@@ -11,7 +11,7 @@ namespace pathos {
 		class Peep_out : public eeros::sequencer::Sequence<> {
 
 		public:
-			Peep_out(eeros::sequencer::Sequencer* sequencer, pathos::peepingpanel::PeepingPanelControlSystem* controlSys, eeros::safety::SafetySystem* safetySys);
+			Peep_out(eeros::sequencer::Sequencer* sequencer, pathos::peepingpanel::ControlSystem_Peep* controlSys, eeros::safety::SafetySystem* safetySys);
 
 			virtual void init();
 			virtual bool checkPreCondition();
@@ -30,7 +30,7 @@ namespace pathos {
 			bool isTerminating();
 			bool isStopping();
 			
-			peepingpanel::PeepingPanelControlSystem* controlSys;
+			peepingpanel::ControlSystem_Peep* controlSys;
 			eeros::safety::SafetySystem* safetySys;
 		};
 	};

@@ -1,5 +1,5 @@
-#include "PeepingPanelSafetyProperties_x4.hpp"
-#include "../control/PeepingPanelControlSystem.hpp"
+#include "SafetyProperties_Teach.hpp"
+#include "../control/ControlSystem_Teach.hpp"
 
 #include <eeros/hal/HAL.hpp>
 #include <eeros/safety/InputAction.hpp>
@@ -20,115 +20,21 @@ using namespace eeros;
 using namespace eeros::hal;
 using namespace eeros::safety;
 
-PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(std::vector<PeepingPanelControlSystem*> cs, std::array<double,4> configData) : 
-	configData(configData), controlSystems(cs)  {
-		
+SafetyProperties_Teach::SafetyProperties_Teach(std::vector<ControlSystem_Teach*> cs, std::array<double,13> configIn) : 
+	configData(configIn), controlSystems(cs)  {
+	
 	HAL& hal = HAL::instance();
-
+	
+	// Set variables depending on system configurations
+	peep_direction = setPeepDirection(configData);
+	enc = setEncoderInputs(configData, hal);
+	readySig = setReadyInputs(configData, hal);
+	
 	// ############ Define critical outputs ############
 	enable = hal.getLogicPeripheralOutput("enableDrv");
 	criticalOutputs = { enable };
 	
 	// ############ Define critical inputs ############
-
-	if(configData[0] == 1){              // 0 0 0 1
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
-	}
-	else if (configData[0] == 2) {       // 0 0 1 0
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
-	}
-	else if (configData[0] == 3) {       // 0 0 1 1
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
-	}
-	else if (configData[0] == 4) {       // 0 1 0 0
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig2"));
-	}
-	else if (configData[0] == 5) {       // 0 1 0 1
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig2"));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
-	}
-	else if (configData[0] == 6) {       // 0 1 1 0
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig2"));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
-	}
-	else if (configData[0] == 7) {       // 0 1 1 1
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig2"));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
-	}
-	else if (configData[0] == 8) {       // 1 0 0 0
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig1"));
-	}
-	else if (configData[0] == 9) {       // 1 0 0 1
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig1"));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
-	}
-	else if (configData[0] == 10) {      // 1 0 1 0
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig1"));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
-	}
-	else if (configData[0] == 11) {      // 1 0 1 1
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig1"));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
-	}
-	else if (configData[0] == 12) {      // 1 1 0 0
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig1"));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig2"));
-	}
-	else if (configData[0] == 13) {      // 1 1 0 1
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig1"));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig2"));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
-	}
-	else if (configData[0] == 14) {      // 1 1 1 0
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig1"));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig2"));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
-	}
-	else if (configData[0] == 15) {      // 1 1 1 1 
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
-		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig1"));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig2"));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
-		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
-	}
-	else {
-		throw eeros::EEROSException("Invalid config number");
-	}
-	
 	for (auto &e : enc)
 		criticalInputs.push_back(e);
 	for (auto &r : readySig)
@@ -240,9 +146,6 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(std::vector<Pee
 			privateContext->triggerEvent(doSwInit);
 			first = false;
 		}
-// 		// Initialize serial communication
-// 		p.block(true);
-// 		p.baud(serial::Baud::b115200);
 	});
 	
 	level(swInitializing).setLevelAction([&](SafetyContext* privateContext) {
@@ -263,6 +166,7 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(std::vector<Pee
 		}
 		enc.clear();
 		readySig.clear();
+		peep_direction.clear();
 		privateContext->triggerEvent(controlStoppingDone); 
 	});
 	level(poweringDown).setLevelAction([&](SafetyContext* privateContext) {
@@ -287,7 +191,7 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(std::vector<Pee
 	level(poweringUp).setLevelAction([&](SafetyContext* privateContext) {
 		privateContext->triggerEvent(poweringUpDone); 
 	});
-	level(powerOn).setLevelAction([&](SafetyContext* privateContext) { // TODO see with sequencer
+	level(powerOn).setLevelAction([&](SafetyContext* privateContext) { 
 		privateContext->triggerEvent(doHoming); 
 	});
 	
@@ -298,8 +202,9 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(std::vector<Pee
 		
 		// Set initialization speed (set speed only first time)
 		if(first) {
-			for (auto &cs : controlSystems)
-				cs->speedInit.setValue(initialization_speed * configData[2]); // configData[2] = peep_direction
+			for(int i = 0; i < controlSystems.size(); i++){
+				controlSystems[i]->speedInit.setValue(initialization_speed * peep_direction[i]);
+			}
 			first = false;
 		}
 		
@@ -325,8 +230,8 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(std::vector<Pee
 		if(homedCounter++ > 0) { 
 			if(firstHoming && !robotHomed) {
 				// Set encoder offset
-				for (auto &cs : controlSystems){
-					cs->enc_offset.setValue( (cs->initAngle - init_pos * i) * configData[2]);
+				for(int i = 0; i < controlSystems.size(); i++){
+					controlSystems[i]->enc_offset.setValue((controlSystems[i]->initAngle - init_pos*i_gear) * peep_direction[i]);
 				}
 				// Set safety system variables
 				firstHoming = false;
@@ -335,17 +240,17 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(std::vector<Pee
 			
 			// Set init position path planner
 			for (auto &cs : controlSystems)
-				cs->pathPlanner.setInitPos(cs->sum_enc_offset.getOut().getSignal().getValue() / i); 
+				cs->pathPlanner.setInitPos(cs->sum_enc_offset.getOut().getSignal().getValue() / i_gear); 
 			
 			if(!isPosErrorZero()){
 				// Set init position path planner
 				for (auto &cs : controlSystems)
-					cs->pathPlanner.setInitPos(cs->sum_enc_offset.getOut().getSignal().getValue() / i);
+					cs->pathPlanner.setInitPos(cs->sum_enc_offset.getOut().getSignal().getValue() / i_gear);
 			}
 			else{
 				// Set init position path planner
 				for (auto &cs : controlSystems)
-					cs->pathPlanner.setInitPos(cs->sum_enc_offset.getOut().getSignal().getValue() / i);
+					cs->pathPlanner.setInitPos(cs->sum_enc_offset.getOut().getSignal().getValue() / i_gear);
 				
 				// Switch to position control
 				for (auto &cs : controlSystems)
@@ -377,14 +282,6 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(std::vector<Pee
 		for(int i = 0; i < controlSystems.size(); i++){
 			if(controlSystems[i]->pathPlanner.posReached()) ready[i] = true;
 		}
-		
-// 		static int count = 0;
-// 		if(count > 1000){
-// 			std::cout << ready[0] << "; " << ready[1] << "; " << ready[2] << "; " << ready[3] << std::endl;
-// 			count = 0;
-// 		}
-// 		else count++;
-		
 		// Check if all axes are ready
 		if(allTrue(ready)) privateContext->triggerEvent(readyDone);
 	});
@@ -393,11 +290,11 @@ PeepingPanelSafetyProperties_x4::PeepingPanelSafetyProperties_x4(std::vector<Pee
 	entryLevel = off;
 }
 
-PeepingPanelSafetyProperties_x4::~PeepingPanelSafetyProperties_x4(){
+SafetyProperties_Teach::~SafetyProperties_Teach(){
 	// nothing to do
 }
 
-bool PeepingPanelSafetyProperties_x4::isDacZero() {
+bool SafetyProperties_Teach::isDacZero() {
 	static bool isZero = true; static bool prev = true;
 	for (auto &cs : controlSystems){
 		if (cs->dacSwitch.getIn(1).getSignal().getValue() < 0.002)
@@ -409,7 +306,7 @@ bool PeepingPanelSafetyProperties_x4::isDacZero() {
 	return prev;
 }
 
-bool PeepingPanelSafetyProperties_x4::isPosErrorZero() {
+bool SafetyProperties_Teach::isPosErrorZero() {
 	bool isZero; bool prev = true;
 	for (int i = 0; i < controlSystems.size(); i++){
 		AxisVector refVal = controlSystems[i]->i_ref.getOut().getSignal().getValue(); 
@@ -423,7 +320,7 @@ bool PeepingPanelSafetyProperties_x4::isPosErrorZero() {
 	return prev;
 }
 
-bool PeepingPanelSafetyProperties_x4::allTrue(std::array<bool,4> v) {
+bool SafetyProperties_Teach::allTrue(std::array<bool,4> v) {
 	bool prev = true;
 	for (int i = 0; i < controlSystems.size(); i++){
 		bool istrue;
@@ -434,3 +331,218 @@ bool PeepingPanelSafetyProperties_x4::allTrue(std::array<bool,4> v) {
 	return prev;
 }
 
+std::vector<double> SafetyProperties_Teach::setPeepDirection(std::array<double,13> configData) {
+	std::vector<double> peep_direction;
+	
+	if(configData[0] == 1){              // 0 0 0 1
+		peep_direction.push_back(configData[11]);
+	}
+	else if (configData[0] == 2) {       // 0 0 1 0
+		peep_direction.push_back(configData[8]);
+	}
+	else if (configData[0] == 3) {       // 0 0 1 1
+		peep_direction.push_back(configData[8]);
+		peep_direction.push_back(configData[11]);
+	}
+	else if (configData[0] == 4) {       // 0 1 0 0
+		peep_direction.push_back(configData[5]);
+	}
+	else if (configData[0] == 5) {       // 0 1 0 1
+		peep_direction.push_back(configData[5]);
+		peep_direction.push_back(configData[11]);
+	}
+	else if (configData[0] == 6) {       // 0 1 1 0
+		peep_direction.push_back(configData[5]);
+		peep_direction.push_back(configData[8]);
+	}
+	else if (configData[0] == 7) {       // 0 1 1 1
+		peep_direction.push_back(configData[5]);
+		peep_direction.push_back(configData[8]);
+		peep_direction.push_back(configData[11]);
+	}
+	else if (configData[0] == 8) {       // 1 0 0 0
+		peep_direction.push_back(configData[2]);
+	}
+	else if (configData[0] == 9) {       // 1 0 0 1
+		peep_direction.push_back(configData[2]);
+		peep_direction.push_back(configData[11]);
+	}
+	else if (configData[0] == 10) {      // 1 0 1 0
+		peep_direction.push_back(configData[2]);
+		peep_direction.push_back(configData[8]);
+	}
+	else if (configData[0] == 11) {      // 1 0 1 1
+		peep_direction.push_back(configData[2]);
+		peep_direction.push_back(configData[8]);
+		peep_direction.push_back(configData[11]);
+	}
+	else if (configData[0] == 12) {      // 1 1 0 0
+		peep_direction.push_back(configData[2]);
+		peep_direction.push_back(configData[5]);
+	}
+	else if (configData[0] == 13) {      // 1 1 0 1
+		peep_direction.push_back(configData[2]);
+		peep_direction.push_back(configData[5]);
+		peep_direction.push_back(configData[11]);
+	}
+	else if (configData[0] == 14) {      // 1 1 1 0
+		peep_direction.push_back(configData[2]);
+		peep_direction.push_back(configData[5]);
+		peep_direction.push_back(configData[8]);
+	}
+	else if (configData[0] == 15) {      // 1 1 1 1 
+		peep_direction.push_back(configData[2]);
+		peep_direction.push_back(configData[5]);
+		peep_direction.push_back(configData[8]);
+		peep_direction.push_back(configData[11]);
+	}
+	else {
+		throw eeros::EEROSException("Invalid config number");
+	}
+	
+	return peep_direction;
+}
+
+std::vector<eeros::hal::ScalablePeripheralInput<double>*> SafetyProperties_Teach::setEncoderInputs(std::array<double,13> configData, HAL& hal) {
+	std::vector<eeros::hal::ScalablePeripheralInput<double>*> enc;
+	
+	if(configData[0] == 1){              // 0 0 0 1
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
+	}
+	else if (configData[0] == 2) {       // 0 0 1 0
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
+	}
+	else if (configData[0] == 3) {       // 0 0 1 1
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
+	}
+	else if (configData[0] == 4) {       // 0 1 0 0
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
+	}
+	else if (configData[0] == 5) {       // 0 1 0 1
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
+	}
+	else if (configData[0] == 6) {       // 0 1 1 0
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
+	}
+	else if (configData[0] == 7) {       // 0 1 1 1
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
+	}
+	else if (configData[0] == 8) {       // 1 0 0 0
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
+	}
+	else if (configData[0] == 9) {       // 1 0 0 1
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
+	}
+	else if (configData[0] == 10) {      // 1 0 1 0
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
+	}
+	else if (configData[0] == 11) {      // 1 0 1 1
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
+	}
+	else if (configData[0] == 12) {      // 1 1 0 0
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
+	}
+	else if (configData[0] == 13) {      // 1 1 0 1
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
+	}
+	else if (configData[0] == 14) {      // 1 1 1 0
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
+	}
+	else if (configData[0] == 15) {      // 1 1 1 1 
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc1")));
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc2")));
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc3")));
+		enc.push_back(dynamic_cast<ScalablePeripheralInput<double>*>(hal.getRealPeripheralInput("enc4")));
+	}
+	else {
+		throw eeros::EEROSException("Invalid config number");
+	}
+	
+	return enc;
+}
+	
+std::vector<eeros::hal::PeripheralInput<bool>*> SafetyProperties_Teach::setReadyInputs(std::array<double,13> configData, HAL& hal) {
+	std::vector<eeros::hal::PeripheralInput<bool>*> readySig;
+	
+	if(configData[0] == 1){              // 0 0 0 1
+		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
+	}
+	else if (configData[0] == 2) {       // 0 0 1 0
+		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
+	}
+	else if (configData[0] == 3) {       // 0 0 1 1
+		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
+		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
+	}
+	else if (configData[0] == 4) {       // 0 1 0 0
+		readySig.push_back(hal.getLogicPeripheralInput("readySig2"));
+	}
+	else if (configData[0] == 5) {       // 0 1 0 1
+		readySig.push_back(hal.getLogicPeripheralInput("readySig2"));
+		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
+	}
+	else if (configData[0] == 6) {       // 0 1 1 0
+		readySig.push_back(hal.getLogicPeripheralInput("readySig2"));
+		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
+	}
+	else if (configData[0] == 7) {       // 0 1 1 1
+		readySig.push_back(hal.getLogicPeripheralInput("readySig2"));
+		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
+		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
+	}
+	else if (configData[0] == 8) {       // 1 0 0 0
+		readySig.push_back(hal.getLogicPeripheralInput("readySig1"));
+	}
+	else if (configData[0] == 9) {       // 1 0 0 1
+		readySig.push_back(hal.getLogicPeripheralInput("readySig1"));
+		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
+	}
+	else if (configData[0] == 10) {      // 1 0 1 0
+		readySig.push_back(hal.getLogicPeripheralInput("readySig1"));
+		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
+	}
+	else if (configData[0] == 11) {      // 1 0 1 1
+		readySig.push_back(hal.getLogicPeripheralInput("readySig1"));
+		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
+		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
+	}
+	else if (configData[0] == 12) {      // 1 1 0 0
+		readySig.push_back(hal.getLogicPeripheralInput("readySig1"));
+		readySig.push_back(hal.getLogicPeripheralInput("readySig2"));
+	}
+	else if (configData[0] == 13) {      // 1 1 0 1
+		readySig.push_back(hal.getLogicPeripheralInput("readySig1"));
+		readySig.push_back(hal.getLogicPeripheralInput("readySig2"));
+		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
+	}
+	else if (configData[0] == 14) {      // 1 1 1 0
+		readySig.push_back(hal.getLogicPeripheralInput("readySig1"));
+		readySig.push_back(hal.getLogicPeripheralInput("readySig2"));
+		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
+	}
+	else if (configData[0] == 15) {      // 1 1 1 1 
+		readySig.push_back(hal.getLogicPeripheralInput("readySig1"));
+		readySig.push_back(hal.getLogicPeripheralInput("readySig2"));
+		readySig.push_back(hal.getLogicPeripheralInput("readySig3"));
+		readySig.push_back(hal.getLogicPeripheralInput("readySig4"));
+	}
+	else {
+		throw eeros::EEROSException("Invalid config number");
+	}
+	
+	return readySig;
+}

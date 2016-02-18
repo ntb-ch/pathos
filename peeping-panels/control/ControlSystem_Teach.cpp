@@ -1,4 +1,4 @@
-#include "PeepingPanelControlSystem.hpp"
+#include "ControlSystem_Teach.hpp"
 #include <eeros/hal/HAL.hpp>
 #include "../constants.hpp"
 #include <iostream>
@@ -6,11 +6,11 @@
 using namespace eeros::hal;
 using namespace pathos::peepingpanel;
  
-PeepingPanelControlSystem::PeepingPanelControlSystem(std::string enc_id, std::string dac_id) :
- 
+ControlSystem_Teach::ControlSystem_Teach(std::string enc_id, std::string dac_id) :
+
 enc(enc_id),
 pathPlanner(velMax, accMax, decMax, dt),
-i_ref(i),
+i_ref(i_gear),
 kp(pos_ctrl_gain),
 kv(vel_ctrl_gain),
 speedInit(0.0),
@@ -59,7 +59,7 @@ timedomain("Main time domain", dt, true)
 	dac_saturation.getIn().connect(dacSwitch.getOut());
 	dac.getIn().connect(dac_saturation.getOut());
 
-    // Run Blocks
+    // Run Blocks	
 	timedomain.addBlock(&enc);
 	timedomain.addBlock(&mux_enc);
 	timedomain.addBlock(&enc_offset);
@@ -81,15 +81,14 @@ timedomain("Main time domain", dt, true)
 	timedomain.addBlock(&dacConst);
 	timedomain.addBlock(&dacSwitch);
 	timedomain.addBlock(&dac_saturation);
-	timedomain.addBlock(&dac);
-	
+	timedomain.addBlock(&dac);	
 }
  
-void PeepingPanelControlSystem::start() {
+void ControlSystem_Teach::start() {
     timedomain.start();
 }
  
-void PeepingPanelControlSystem::stop() {
+void ControlSystem_Teach::stop() {
     timedomain.stop();
     timedomain.join();  
 }

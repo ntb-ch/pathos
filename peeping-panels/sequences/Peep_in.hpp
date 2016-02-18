@@ -1,8 +1,8 @@
 #ifndef CH_NTB_PEEPINGPANEL_PEEPIN_HPP_
 #define CH_NTB_PEEPINGPANEL_PEEPIN_HPP_
 
-#include "../control/PeepingPanelControlSystem.hpp"
-#include "../safety/PeepingPanelSafetyProperties_x4.hpp"
+#include "../control/ControlSystem_Peep.hpp"
+#include "../safety/SafetyProperties_Peep.hpp"
 #include <eeros/sequencer/Sequence.hpp>
 #include <eeros/safety/SafetySystem.hpp>
 
@@ -12,7 +12,7 @@ namespace pathos {
 		class Peep_in : public eeros::sequencer::Sequence<> {
 
 		public:
-			Peep_in(eeros::sequencer::Sequencer* sequencer, pathos::peepingpanel::PeepingPanelControlSystem* controlSys, eeros::safety::SafetySystem* safetySys);
+			Peep_in(eeros::sequencer::Sequencer* sequencer, pathos::peepingpanel::ControlSystem_Peep* controlSys, eeros::safety::SafetySystem* safetySys);
 
 			virtual void init();
 			virtual bool checkPreCondition();
@@ -29,7 +29,7 @@ namespace pathos {
 			bool isTerminating();
 			bool isStopping();
 						
-			peepingpanel::PeepingPanelControlSystem* controlSys;
+			peepingpanel::ControlSystem_Peep* controlSys;
 			eeros::safety::SafetySystem* safetySys;
 		};
 	};
