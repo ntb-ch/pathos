@@ -1,0 +1,37 @@
+motorsConnected = 8;
+
+peepTime1 = 3.0
+peepDirection1 = -1.0
+peepPosition1 = 1.04
+
+peepTime2 = 3.0
+peepDirection2 = -1.0
+peepPosition2 = 1.04
+
+peepTime3 = 3.0
+peepDirection3 = -1.0
+peepPosition3 = 1.04
+
+peepTime4 = 3.0
+peepDirection4 = -1.0
+peepPosition4 = 1.04
+
+visible1 = 1, 2, 3, 4
+close1 = 5, 6,  7, -1
+near1 = 8, 9, -1,  0
+far1 = 10, 2,  3,  4
+
+visible2 = 1, 2,  3,  4 
+close2 = 5, 6,  7, -1
+near2 = 8, 9, -1,  0
+far2 = 10, 2,  3,  4
+
+visible3 = 1, 2,  3,  4
+close3 = 5, 6,  7, -1
+near3 = 8, 9, -1,  0
+far3 = 10, 2,  3,  4
+
+visible4 = 1, 2,  3,  4
+close4 = 5, 6,  7, -1
+near4 = 8, 9, -1,  0
+far4 = 10, 2,  3,  4
