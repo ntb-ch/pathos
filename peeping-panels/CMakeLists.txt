@@ -15,8 +15,8 @@ link_directories(${ADDITIONAL_LINK_DIRS})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-add_executable(configExample configExample.cpp)
-target_link_libraries(configExample eeros pthread)
+# add_executable(configExample configExample.cpp)
+# target_link_libraries(configExample eeros pthread)
 
 # Executable, teaching
 add_executable(teach main_teach.cpp

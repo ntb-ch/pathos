@@ -23,8 +23,8 @@ namespace pathos {
 		class ControlSystem_Peep {
 		
 			public:
-				ControlSystem_Peep(std::string enc, std::string dac, SensorsThread* sensorsData, eeros::math::Matrix<4,15,int> sensAreas);
-			
+				ControlSystem_Peep(std::string enc, std::string dac, SensorsThread* sensThread, std::array<int,60> sensAreas);
+
 				void start(); // starts timedomains             
 				void stop();  // stops timedomains
 			
@@ -68,6 +68,7 @@ namespace pathos {
 				eeros::control::TimeDomain timedomain;
 				
 				AxisVector pos, posPrev;
+				
 		};  // end class  
 	};
 }; 

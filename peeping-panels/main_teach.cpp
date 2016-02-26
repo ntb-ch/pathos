@@ -39,9 +39,9 @@ int main() {
 	// Load configuration files
 	std::array<double,13> allPanelsData;
 	std::vector<Array3> configSystem;
-	std::vector<eeros::math::Matrix<4,15,int>> configSensors; 
-	LoadConfig_system("/mnt/data/curves/configsystem.txt", &allPanelsData, &configSystem, &configSensors);
-	
+	eeros::math::Matrix<16,15,int> allSensAreas;
+// 	LoadConfig_system("/mnt/data/curves/configsystem.txt", &allPanelsData, &configSystem, &allSensAreas);
+		
 	// Create Control Systems
 	std::vector<ControlSystem_Teach*> controlSystems = CreateControlSystem_teach(allPanelsData);   
 

@@ -61,7 +61,7 @@ void MainSequence_peep::run() {
 				// Check if it's time to peep (sensors) -> to be combined with if sleep
 				
 				// Example of check sensors data
-				controlSys->sensorsInputData.getOutStatus().getSignal().getValue();
+// 				controlSys->sensorsInputData.getOutStatus().getSignal().getValue();
 				
 				sleep(1);
 				

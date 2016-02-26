@@ -86,6 +86,11 @@ namespace pathos {
 				std::array<double,13> configData;
 				std::vector<double> peep_direction;
 				double err = 0.00001;
+				
+				int homedCounter;
+				int teachingCounter ;
+				bool firstHoming;
+				bool robotHomed; 
 		};
 	};
 };

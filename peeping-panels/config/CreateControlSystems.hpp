@@ -3,89 +3,96 @@
 #include <iostream>
 
 using namespace pathos::peepingpanel;
+using Array13 = std::array<double, 13>;
+using Array60 = std::array<int   , 60>;
 
-std::vector<ControlSystem_Peep*> CreateControlSystem(std::array<double,13> configData, SensorsThread* sensorsData, std::vector<eeros::math::Matrix<4,15,int>> sensorsAreas) {
+std::vector<ControlSystem_Peep*> CreateControlSystem(std::array<double,13> configData, 
+													 Array60 sensorsArea_1, Array60 sensorsArea_2, 
+													 Array60 sensorsArea_3, Array60 sensorsArea_4, 
+													 SensorsThread* sensorsThread) 
+
+{
 	std::vector<ControlSystem_Peep*> controlSystems;
 	int config = configData[0];
-	
+		
 	if(config == 0)
 		throw eeros::EEROSException("No motor connected");
 	else if(config == 1 ){        // 0 0 0 1
 		std::cout << "motor 4 connected" << std::endl;
-		controlSystems.push_back(new ControlSystem_Peep("enc4", "dac4", sensorsData, sensorsAreas.at(3)));
-	}                                                                                              
-	else if(config == 2 ){        // 0 0 1 0                                                      
-		std::cout << "motor 3 connected" << std::endl;                                              
-		controlSystems.push_back(new ControlSystem_Peep("enc3", "dac3", sensorsData, sensorsAreas.at(2)));
-	}                                                                                             
-	else if(config == 3 ){       // 0 0 1 1                                                        
-		std::cout << "motor 3 and 4 connected" << std::endl;                                       
-		controlSystems.push_back(new ControlSystem_Peep("enc3", "dac3", sensorsData, sensorsAreas.at(2)));
-		controlSystems.push_back(new ControlSystem_Peep("enc4", "dac4", sensorsData, sensorsAreas.at(3)));
-	}                                                                                              
-	else if(config == 4 ){       // 0 1 0 0                                                        
-		std::cout << "motor 2 connected" << std::endl;                                             
-		controlSystems.push_back(new ControlSystem_Peep("enc2", "dac2", sensorsData, sensorsAreas.at(1)));
-	}                                                                                              
-	else if(config == 5 ){       // 0 1 0 1                                                        
-		std::cout << "motor 2 and 4 connected" << std::endl;                                       
-		controlSystems.push_back(new ControlSystem_Peep("enc2", "dac2", sensorsData, sensorsAreas.at(1)));
-		controlSystems.push_back(new ControlSystem_Peep("enc4", "dac4", sensorsData, sensorsAreas.at(3)));
-	}                                                                                             
-	else if(config == 6 ){       // 0 1 1 0                                                        
-		std::cout << "motor 2 and 3 connected" << std::endl;                                        
-		controlSystems.push_back(new ControlSystem_Peep("enc2", "dac2", sensorsData, sensorsAreas.at(1)));
-		controlSystems.push_back(new ControlSystem_Peep("enc3", "dac3", sensorsData, sensorsAreas.at(2))); 
-	}                                                                                               
-	else if(config == 7 ){      // 0 1 1 1                                                          
-		std::cout << "motor 2, 3 and 4 connected" << std::endl;                                     
-		controlSystems.push_back(new ControlSystem_Peep("enc2", "dac2", sensorsData, sensorsAreas.at(1)));
-		controlSystems.push_back(new ControlSystem_Peep("enc3", "dac3", sensorsData, sensorsAreas.at(2)));
-		controlSystems.push_back(new ControlSystem_Peep("enc4", "dac4", sensorsData, sensorsAreas.at(3))); 
-	}                                                                                               
-	else if(config == 8 ){     // 1 0 0 0                                                           
-		std::cout << "motor 1 connected" << std::endl;                                              
-		controlSystems.push_back(new ControlSystem_Peep("enc1", "dac1", sensorsData, sensorsAreas.at(0))); 
-	}                                                                                               
-	else if(config == 9 ){     // 1 0 0 1                                                          
-		std::cout << "motor 1 and 4 connected" << std::endl;                                        
-		controlSystems.push_back(new ControlSystem_Peep("enc1", "dac1", sensorsData, sensorsAreas.at(0)));
-		controlSystems.push_back(new ControlSystem_Peep("enc4", "dac4", sensorsData, sensorsAreas.at(3)));
-	}                                                                                               
-	else if(config == 10){     // 1 0 1 0                                                           
-		std::cout << "motor 1 and 3 connected" << std::endl;                                       
-		controlSystems.push_back(new ControlSystem_Peep("enc1", "dac1", sensorsData, sensorsAreas.at(0)));
-		controlSystems.push_back(new ControlSystem_Peep("enc3", "dac3", sensorsData, sensorsAreas.at(2))); 
-	}                                                                                               
-	else if(config == 11){      // 1 0 1 1                                                          
-		std::cout << "motor 1, 3 and 4 connected" << std::endl;                                     
-		controlSystems.push_back(new ControlSystem_Peep("enc1", "dac1", sensorsData, sensorsAreas.at(0)));
-		controlSystems.push_back(new ControlSystem_Peep("enc3", "dac3", sensorsData, sensorsAreas.at(2)));
-		controlSystems.push_back(new ControlSystem_Peep("enc4", "dac4", sensorsData, sensorsAreas.at(3))); 
-	}                                                                                               
-	else if(config == 12){     // 1 1 0 0                                                           
-		std::cout << "motor 1 and 2 connected" << std::endl;                                        
-		controlSystems.push_back(new ControlSystem_Peep("enc1", "dac1", sensorsData, sensorsAreas.at(0)));
-		controlSystems.push_back(new ControlSystem_Peep("enc2", "dac2", sensorsData, sensorsAreas.at(1))); 
-	}                                                                                               
-	else if(config == 13){     // 1 1 0 1                                                           
-		std::cout << "motor 1, 2 and 4 connected" << std::endl;                                     
-		controlSystems.push_back(new ControlSystem_Peep("enc1", "dac1", sensorsData, sensorsAreas.at(0)));
-		controlSystems.push_back(new ControlSystem_Peep("enc2", "dac2", sensorsData, sensorsAreas.at(1)));
-		controlSystems.push_back(new ControlSystem_Peep("enc4", "dac4", sensorsData, sensorsAreas.at(3))); 
-	}                                                                                               
-	else if(config == 14){    // 1 1 1 0                                                            
-		std::cout << "motor 1, 2 and 3 connected" << std::endl;                                     
-		controlSystems.push_back(new ControlSystem_Peep("enc1", "dac1", sensorsData, sensorsAreas.at(0)));
-		controlSystems.push_back(new ControlSystem_Peep("enc2", "dac2", sensorsData, sensorsAreas.at(1)));
-		controlSystems.push_back(new ControlSystem_Peep("enc3", "dac3", sensorsData, sensorsAreas.at(2)));
-	}                                                                                               
-	else if(config == 15){    // 1 1 1 1                                                            
-		std::cout << "all motors connected" << std::endl;                                          
-		controlSystems.push_back(new ControlSystem_Peep("enc1", "dac1", sensorsData, sensorsAreas.at(0)));
-		controlSystems.push_back(new ControlSystem_Peep("enc2", "dac2", sensorsData, sensorsAreas.at(1)));
-		controlSystems.push_back(new ControlSystem_Peep("enc3", "dac3", sensorsData, sensorsAreas.at(2)));
-		controlSystems.push_back(new ControlSystem_Peep("enc4", "dac4", sensorsData, sensorsAreas.at(3)));
+		controlSystems.push_back(new ControlSystem_Peep("enc4", "dac4", sensorsThread, sensorsArea_4));
+	}                                                                                 
+	else if(config == 2 ){        // 0 0 1 0            
+		std::cout << "motor 3 connected" << std::endl;
+		controlSystems.push_back(new ControlSystem_Peep("enc3", "dac3", sensorsThread, sensorsArea_3));
+	}                                                                 
+	else if(config == 3 ){       // 0 0 1 1                           
+		std::cout << "motor 3 and 4 connected" << std::endl; 
+		controlSystems.push_back(new ControlSystem_Peep("enc3", "dac3", sensorsThread, sensorsArea_3));
+		controlSystems.push_back(new ControlSystem_Peep("enc4", "dac4", sensorsThread, sensorsArea_4));
+	}                                                                 
+	else if(config == 4 ){       // 0 1 0 0                           
+		std::cout << "motor 2 connected" << std::endl; 
+		controlSystems.push_back(new ControlSystem_Peep("enc2", "dac2", sensorsThread, sensorsArea_2));
+	}                                                                 
+	else if(config == 5 ){       // 0 1 0 1                           
+		std::cout << "motor 2 and 4 connected" << std::endl; 
+		controlSystems.push_back(new ControlSystem_Peep("enc2", "dac2", sensorsThread, sensorsArea_2));
+		controlSystems.push_back(new ControlSystem_Peep("enc4", "dac4", sensorsThread, sensorsArea_4));
+	}                                                                 
+	else if(config == 6 ){       // 0 1 1 0                           
+		std::cout << "motor 2 and 3 connected" << std::endl; 
+		controlSystems.push_back(new ControlSystem_Peep("enc2", "dac2", sensorsThread, sensorsArea_2));
+		controlSystems.push_back(new ControlSystem_Peep("enc3", "dac3", sensorsThread, sensorsArea_3)); 
+	}                                                                 
+	else if(config == 7 ){      // 0 1 1 1                            
+		std::cout << "motor 2, 3 and 4 connected" << std::endl;  
+		controlSystems.push_back(new ControlSystem_Peep("enc2", "dac2", sensorsThread, sensorsArea_2));
+		controlSystems.push_back(new ControlSystem_Peep("enc3", "dac3", sensorsThread, sensorsArea_3));
+		controlSystems.push_back(new ControlSystem_Peep("enc4", "dac4", sensorsThread, sensorsArea_4)); 
+	}                                                                 
+	else if(config == 8 ){     // 1 0 0 0               
+		std::cout << "motor 1 connected" << std::endl;    
+		controlSystems.push_back(new ControlSystem_Peep("enc1", "dac1", sensorsThread, sensorsArea_1));  
+	}                                                                 
+	else if(config == 9 ){     // 1 0 0 1                             
+		std::cout << "motor 1 and 4 connected" << std::endl;  
+		controlSystems.push_back(new ControlSystem_Peep("enc1", "dac1", sensorsThread, sensorsArea_1));
+		controlSystems.push_back(new ControlSystem_Peep("enc4", "dac4", sensorsThread, sensorsArea_4));
+	}                                                                 
+	else if(config == 10){     // 1 0 1 0                             
+		std::cout << "motor 1 and 3 connected" << std::endl; 
+		controlSystems.push_back(new ControlSystem_Peep("enc1", "dac1", sensorsThread, sensorsArea_1));
+		controlSystems.push_back(new ControlSystem_Peep("enc3", "dac3", sensorsThread, sensorsArea_3)); 
+	}                                                                 
+	else if(config == 11){      // 1 0 1 1                            
+		std::cout << "motor 1, 3 and 4 connected" << std::endl; 
+		controlSystems.push_back(new ControlSystem_Peep("enc1", "dac1", sensorsThread, sensorsArea_1));
+		controlSystems.push_back(new ControlSystem_Peep("enc3", "dac3", sensorsThread, sensorsArea_3));
+		controlSystems.push_back(new ControlSystem_Peep("enc4", "dac4", sensorsThread, sensorsArea_4)); 
+	}                                                                 
+	else if(config == 12){     // 1 1 0 0                             
+		std::cout << "motor 1 and 2 connected" << std::endl;      
+		controlSystems.push_back(new ControlSystem_Peep("enc1", "dac1", sensorsThread, sensorsArea_1));
+		controlSystems.push_back(new ControlSystem_Peep("enc2", "dac2", sensorsThread, sensorsArea_2)); 
+	}                                                                 
+	else if(config == 13){     // 1 1 0 1                             
+		std::cout << "motor 1, 2 and 4 connected" << std::endl; 
+		controlSystems.push_back(new ControlSystem_Peep("enc1", "dac1", sensorsThread, sensorsArea_1));
+		controlSystems.push_back(new ControlSystem_Peep("enc2", "dac2", sensorsThread, sensorsArea_2));
+		controlSystems.push_back(new ControlSystem_Peep("enc4", "dac4", sensorsThread, sensorsArea_4)); 
+	}                                                                 
+	else if(config == 14){    // 1 1 1 0                              
+		std::cout << "motor 1, 2 and 3 connected" << std::endl;  
+		controlSystems.push_back(new ControlSystem_Peep("enc1", "dac1", sensorsThread, sensorsArea_1));
+		controlSystems.push_back(new ControlSystem_Peep("enc2", "dac2", sensorsThread, sensorsArea_2));
+		controlSystems.push_back(new ControlSystem_Peep("enc3", "dac3", sensorsThread, sensorsArea_3));
+	}                                                                 
+	else if(config == 15){    // 1 1 1 1                              
+		std::cout << "all motors connected" << std::endl;  
+		controlSystems.push_back(new ControlSystem_Peep("enc1", "dac1", sensorsThread, sensorsArea_1));
+		controlSystems.push_back(new ControlSystem_Peep("enc2", "dac2", sensorsThread, sensorsArea_2));
+		controlSystems.push_back(new ControlSystem_Peep("enc3", "dac3", sensorsThread, sensorsArea_3));
+		controlSystems.push_back(new ControlSystem_Peep("enc4", "dac4", sensorsThread, sensorsArea_4));
 	}
 	else
 		throw eeros::EEROSException("Invalid motor config value");
@@ -181,3 +188,4 @@ std::vector<ControlSystem_Teach*> CreateControlSystem_teach(std::array<double,13
 	
 	return controlSystems;
 }
+

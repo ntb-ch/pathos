@@ -40,16 +40,16 @@ int main() {
 	
 	// Load configuration files
 	std::array<double,13> allPanelsData;
+	std::array<int,60> sensArea_1, sensArea_2, sensArea_3, sensArea_4;
 	std::vector<Array3> configSystem;
-	std::vector<eeros::math::Matrix<4,15,int>> configSensors; 
-	LoadConfig_system("/mnt/data/curves/configsystem.txt", &allPanelsData, &configSystem, &configSensors);
-
+	LoadConfig_system("/mnt/data/curves/configsystem.txt", &allPanelsData, &configSystem, &sensArea_1, &sensArea_2, &sensArea_3, &sensArea_4);
+	
 	// Start sensors data thread
-	SensorsThread sensorsData;
-	while(!sensorsData.isRunning()) usleep(100000);
+	SensorsThread sensorsThread;
+	while(!sensorsThread.isRunning()) usleep(100000);
 	
 	// Create Control Systems
-	std::vector<ControlSystem_Peep*> controlSystems = CreateControlSystem(allPanelsData, &sensorsData, configSensors);   
+	std::vector<ControlSystem_Peep*> controlSystems = CreateControlSystem(allPanelsData, sensArea_1, sensArea_2, sensArea_3, sensArea_4, &sensorsThread);   
 	
 	// Initialize logger
 	Logger<LogWriter>::setDefaultWriter(&w);
@@ -61,7 +61,6 @@ int main() {
 	// Create the safety system
 	SafetyProperties_Peep safetyProperties(controlSystems, allPanelsData);
 	SafetySystem safetySystem(safetyProperties, dt);
-	
 	
 	// Get Sequencer
 	std::vector<Sequencer*> sequencers;
@@ -99,15 +98,14 @@ int main() {
 	safetySystem.shutdown();
 	
 	// Remove elements from vectors
+	configSystem.clear();
 	controlSystems.clear();
 	sequencers.clear();
 	mainSequences.clear();
-	configSystem.clear();
-	configSensors.clear();
 	
 	// Stop sensors communication
-	sensorsData.stop();
-	sensorsData.join();
+	sensorsThread.stop();
+	sensorsThread.join();
 	
 	return 0;
 }

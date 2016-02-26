@@ -6,9 +6,10 @@
 using namespace eeros::hal;
 using namespace pathos::peepingpanel;
  
-ControlSystem_Peep::ControlSystem_Peep(std::string enc_id, std::string dac_id, SensorsThread* sensorsData, eeros::math::Matrix<4,15,int> sensAreas) :
+ControlSystem_Peep::ControlSystem_Peep(std::string enc_id, std::string dac_id, SensorsThread* sensThread, 
+									   std::array<int,60> sensAreas) :
 
-sensorsInputData(sensorsData, sensAreas),
+sensorsInputData(sensThread, sensAreas),
 enc(enc_id),
 pathPlanner(velMax, accMax, decMax, dt),
 i_ref(i_gear),
@@ -85,8 +86,6 @@ timedomain("Main time domain", dt, true)
 	timedomain.addBlock(&dacSwitch);
 	timedomain.addBlock(&dac_saturation);
 	timedomain.addBlock(&dac);
-	
-// 	std::cout << sensorsData->isRunning() << std::endl;
 	
 }
  
