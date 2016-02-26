@@ -177,7 +177,7 @@ std::vector<Array3> setSystemData(Array13 configData) {
 
 // *** 3. Load system configuration (all)
 void LoadConfig_system(std::string fileName, std::array<double,13>* allPanelsData, std::vector<Array3>* systemDataPtr, 
-	Array60* sensArea_1, Array60*  sensArea_2, Array60* sensArea_3, Array60* sensArea_4) {/*eeros::math::Matrix<16,15,int>* allSensData) {*/
+	Array60* sensArea_1, Array60*  sensArea_2, Array60* sensArea_3, Array60* sensArea_4) {
 	PeepingPanelConfig configFile(fileName.c_str());
 	configFile.load();
 	
@@ -187,26 +187,26 @@ void LoadConfig_system(std::string fileName, std::array<double,13>* allPanelsDat
 	*allPanelsData = configData;
 	
 	// 2. Sensors data
+	Array15 visible1 = configFile.visible1;
+	Array15 close1   = configFile.close1  ;
+	Array15 near1    = configFile.near1   ;
+	Array15 far1     = configFile.far1    ;
+	Array15 visible2 = configFile.visible2;
+	Array15 close2   = configFile.close2  ;
+	Array15 near2    = configFile.near2   ;
+	Array15 far2     = configFile.far2    ;
+	Array15 visible3 = configFile.visible3;
+	Array15 close3   = configFile.close3  ;
+	Array15 near3    = configFile.near3   ;
+	Array15 far3     = configFile.far3    ;
+	Array15 visible4 = configFile.visible4;
+	Array15 close4   = configFile.close4  ;
+	Array15 near4    = configFile.near4   ;
+	Array15 far4     = configFile.far4    ;
 	
-	// TODO substitute with read from config file
-	Array15 visible1 = {1, 2,  3,  4, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0  }; 
-	Array15 close1   = {5, 6,  7, -1,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0  }; 
-	Array15 near1    = {8, 9, -1,  0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0  }; 
-	Array15 far1     = {10, 2,  3,  4, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; 
-	Array15 visible2 = {1, 2,  3,  4, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0  }; 
-	Array15 close2   = {5, 6,  7, -1,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0  }; 
-	Array15 near2    = {8, 9, -1,  0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0  }; 
-	Array15 far2     = {10, 2,  3,  4, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; 
-	Array15 visible3 = {1, 2,  3,  4, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0  }; 
-	Array15 close3   = {5, 6,  7, -1,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0  }; 
-	Array15 near3    = {8, 9, -1,  0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0  }; 
-	Array15 far3     = {10, 2,  3,  4, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; 
-	Array15 visible4 = {1, 2,  3,  4, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0  }; 
-	Array15 close4   = {5, 6,  7, -1,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0  }; 
-	Array15 near4    = {8, 9, -1,  0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0  }; 
-	Array15 far4     = {10, 2,  3,  4, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; 
-	// TODO end
-		
+	for(int i = 0; i < 15; i++)
+		std::cout << visible1[i] << "; " << close1[i] << "; " << near1[i] << "; " << far1[i] << std::endl;
+
 	Array60 sa1, sa2, sa3, sa4;
 	
 	int i = 0;
