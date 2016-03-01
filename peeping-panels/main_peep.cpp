@@ -16,6 +16,7 @@
 #include "config/CreateControlSystems.hpp"
 #include "config/LoadSetConfig.hpp"
 #include "sensors/SensorsThread.hpp"
+#include "types.hpp"
 
 using namespace eeros::logger;
 using namespace eeros::hal;
@@ -39,10 +40,10 @@ int main() {
 	Hardware h;
 	
 	// Load configuration files
-	std::array<double,13> allPanelsData;
-	std::array<int,60> sensArea_1, sensArea_2, sensArea_3, sensArea_4;
-	std::vector<Array3> configSystem;
-	LoadConfig_system("/mnt/data/curves/configsystem.txt", &allPanelsData, &configSystem, &sensArea_1, &sensArea_2, &sensArea_3, &sensArea_4);
+	AllConfigArray allPanelsData;
+	SensorsAreasArray sensArea_1, sensArea_2, sensArea_3, sensArea_4;
+	std::vector<PanelConfigArray> configSystem;
+	LoadConfig_Peep("/mnt/data/curves/configsystem.txt", &allPanelsData, &configSystem, &sensArea_1, &sensArea_2, &sensArea_3, &sensArea_4);
 	
 	// Start sensors data thread
 	SensorsThread sensorsThread;

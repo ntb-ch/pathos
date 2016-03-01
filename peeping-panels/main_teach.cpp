@@ -15,6 +15,7 @@
 #include "sequences/MainSequence_teach.hpp"
 #include "config/CreateControlSystems.hpp"
 #include "config/LoadSetConfig.hpp"
+#include "types.hpp"
 
 using namespace eeros::logger;
 using namespace eeros::control;
@@ -37,10 +38,8 @@ int main() {
 	Hardware h;
 	
 	// Load configuration files
-	std::array<double,13> allPanelsData;
-	std::vector<Array3> configSystem;
-	eeros::math::Matrix<16,15,int> allSensAreas;
-// 	LoadConfig_system("/mnt/data/curves/configsystem.txt", &allPanelsData, &configSystem, &allSensAreas);
+	AllConfigArray allPanelsData;
+	LoadConfig_Teach("/mnt/data/curves/configsystem.txt", &allPanelsData);
 		
 	// Create Control Systems
 	std::vector<ControlSystem_Teach*> controlSystems = CreateControlSystem_teach(allPanelsData);   

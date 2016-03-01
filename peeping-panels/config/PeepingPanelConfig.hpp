@@ -46,6 +46,11 @@ class PeepingPanelConfig : public SimpleConfig {
 			add("near4"    , near4    );
 			add("far4"     , far4     );
 			
+			add("panelSize1" , panel_size1);
+			add("panelSize2" , panel_size2);
+			add("panelSize3" , panel_size3);
+			add("panelSize4" , panel_size4);
+			
 		}
 
 		double motors_config;
@@ -58,4 +63,6 @@ class PeepingPanelConfig : public SimpleConfig {
 		std::array<int,15> visible2, close2, near2, far2;
 		std::array<int,15> visible3, close3, near3, far3;
 		std::array<int,15> visible4, close4, near4, far4;
+		
+		int panel_size1, panel_size2, panel_size3, panel_size4;
 };

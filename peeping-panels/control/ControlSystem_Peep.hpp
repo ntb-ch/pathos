@@ -16,6 +16,7 @@
 #include "PathPlanner.hpp"
 #include "ReadSensorData.hpp"
 #include "../sensors/SensorsThread.hpp"
+#include "../types.hpp"
 
 namespace pathos {
 	namespace peepingpanel {
@@ -23,7 +24,7 @@ namespace pathos {
 		class ControlSystem_Peep {
 		
 			public:
-				ControlSystem_Peep(std::string enc, std::string dac, SensorsThread* sensThread, std::array<int,60> sensAreas);
+				ControlSystem_Peep(std::string enc, std::string dac, SensorsThread* sensThread, SensorsAreasArray sensAreas);
 
 				void start(); // starts timedomains             
 				void stop();  // stops timedomains

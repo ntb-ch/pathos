@@ -10,7 +10,7 @@ using namespace eeros;
 using namespace eeros::sequencer;
 using namespace eeros::safety;
 
-MainSequence_peep::MainSequence_peep(Sequencer* sequencer, ControlSystem_Peep* controlSys, SafetySystem* safetySys, std::array<double,3> configData) :
+MainSequence_peep::MainSequence_peep(Sequencer* sequencer, ControlSystem_Peep* controlSys, SafetySystem* safetySys, PanelConfigArray configData) :
 							Sequence<void>("main", sequencer), controlSys(controlSys), safetySys(safetySys),
 							peep_out_s(sequencer, controlSys, safetySys), peep_in_s(sequencer, controlSys, safetySys) {
 	
@@ -21,7 +21,8 @@ MainSequence_peep::MainSequence_peep(Sequencer* sequencer, ControlSystem_Peep* c
 	else //configData[1] == 1.0
 		peep_direction =  'l'; 
 
-	peep_angle     = configData[2];
+	peep_angle = configData[2];
+	panelSize = configData[3];
 }
 
 bool MainSequence_peep::checkPreCondition() {

@@ -1,15 +1,13 @@
 #include <iostream>
 #include "PeepingPanelConfig.hpp"
+#include "../types.hpp"
 
-using Array3  = std::array<double, 3 >;
-using Array13 = std::array<double, 13>;
-using Array15 = std::array<int, 15>;    // cells IDs
-using Array60 = std::array<int, 60>;    // cells IDs
+using namespace pathos::peepingpanel;
 
 // *** 1. Motor config, peep time, angle, direction
 
-Array13 configPanelData(PeepingPanelConfig configFile) {
-	Array13 configData;
+AllConfigArray setAllConfigData(PeepingPanelConfig configFile) {
+	AllConfigArray configData;
 	
 	// *** Config motors *** //
 	if (configFile.motors_config >= 0 && configFile.motors_config < 16) 
@@ -69,101 +67,107 @@ Array13 configPanelData(PeepingPanelConfig configFile) {
 	
 	configData[12] = configFile.peep_position4;
 	
+	configData[13] = configFile.panel_size1;
+	configData[14] = configFile.panel_size2;
+	configData[15] = configFile.panel_size3;
+	configData[16] = configFile.panel_size4;
+	
 	return configData;
 }
 
-std::vector<Array3> setSystemData(Array13 configData) { 
-	std::vector<Array3>configSystem;
+std::vector<PanelConfigArray> setPanelConfigData(AllConfigArray configData) { 
+	
+	std::vector<PanelConfigArray>configSystem;
 	
 	if(configData[0] == 1){              // 0 0 0 1
-		Array3 config4 = {configData[10], configData[11], configData[12]};
+		PanelConfigArray config4 = {configData[10], configData[11], configData[12], configData[16] };
 		configSystem.push_back(config4);
 	}
 	else if (configData[0] == 2) {       // 0 0 1 0
-		Array3 config3 = {configData[7] , configData[8] , configData[9] };
+		PanelConfigArray config3 = {configData[7] , configData[8] , configData[9] , configData[15] };
 		configSystem.push_back(config3);
 	}
 	else if (configData[0] == 3) {       // 0 0 1 1
-		Array3 config3 = {configData[7] , configData[8] , configData[9] };
-		Array3 config4 = {configData[10], configData[11], configData[12]};
+		PanelConfigArray config3 = {configData[7] , configData[8] , configData[9] , configData[15] };
+		PanelConfigArray config4 = {configData[10], configData[11], configData[12], configData[16] };
 		configSystem.push_back(config3);
 		configSystem.push_back(config4);
 	}
 	else if (configData[0] == 4) {       // 0 1 0 0
-		Array3 config2 = {configData[4] , configData[5] , configData[6] };
+		PanelConfigArray config2 = {configData[4] , configData[5] , configData[6] , configData[14] };
 		configSystem.push_back(config2);
 	}
 	else if (configData[0] == 5) {       // 0 1 0 1
-		Array3 config2 = {configData[4] , configData[5] , configData[6] };
-		Array3 config4 = {configData[10], configData[11], configData[12]};
+		PanelConfigArray config2 = {configData[4] , configData[5] , configData[6] , configData[14] };
+		PanelConfigArray config4 = {configData[10], configData[11], configData[12], configData[16] };
 		configSystem.push_back(config2);
 		configSystem.push_back(config4);
 	}
 	else if (configData[0] == 6) {       // 0 1 1 0
-		Array3 config2 = {configData[4] , configData[5] , configData[6] };
-		Array3 config3 = {configData[7] , configData[8] , configData[9] };
+		PanelConfigArray config2 = {configData[4] , configData[5] , configData[6] , configData[14] };
+		PanelConfigArray config3 = {configData[7] , configData[8] , configData[9] , configData[15]};
 		configSystem.push_back(config2);
 		configSystem.push_back(config3);
 	}
 	else if (configData[0] == 7) {       // 0 1 1 1
-		Array3 config2 = {configData[4] , configData[5] , configData[6] };
-		Array3 config3 = {configData[7] , configData[8] , configData[9] };
-		Array3 config4 = {configData[10], configData[11], configData[12]};
+		PanelConfigArray config2 = {configData[4] , configData[5] , configData[6] , configData[14] };
+		PanelConfigArray config3 = {configData[7] , configData[8] , configData[9] , configData[15]};
+		PanelConfigArray config4 = {configData[10], configData[11], configData[12], configData[16] };
 		configSystem.push_back(config2);
 		configSystem.push_back(config3);
 		configSystem.push_back(config4);
 	}
 	else if (configData[0] == 8) {       // 1 0 0 0
-		Array3 config1 = {configData[1] , configData[2] , configData[3] };
+		PanelConfigArray config1 = {configData[1] , configData[2] , configData[3] , configData[13] };
 		configSystem.push_back(config1);
 	}
 	else if (configData[0] == 9) {       // 1 0 0 1
-		Array3 config1 = {configData[1] , configData[2] , configData[3] };
-		Array3 config4 = {configData[10], configData[11], configData[12]};
+		PanelConfigArray config1 = {configData[1] , configData[2] , configData[3] , configData[13] };
+		PanelConfigArray config4 = {configData[10], configData[11], configData[12], configData[16] };
 		configSystem.push_back(config1);
 		configSystem.push_back(config4);
 	}
 	else if (configData[0] == 10) {      // 1 0 1 0
-		Array3 config1 = {configData[1] , configData[2] , configData[3] };
-		Array3 config3 = {configData[7] , configData[8] , configData[9] };
+		PanelConfigArray config1 = {configData[1] , configData[2] , configData[3] , configData[13] };
+		PanelConfigArray config3 = {configData[7] , configData[8] , configData[9] , configData[15]};
 		configSystem.push_back(config1);
 		configSystem.push_back(config3);
 	}
 	else if (configData[0] == 11) {      // 1 0 1 1
-		Array3 config1 = {configData[1] , configData[2] , configData[3] };
-		Array3 config3 = {configData[7] , configData[8] , configData[9] };
-		Array3 config4 = {configData[10], configData[11], configData[12]};
+		PanelConfigArray config1 = {configData[1] , configData[2] , configData[3] , configData[13] };
+		PanelConfigArray config3 = {configData[7] , configData[8] , configData[9] , configData[15]};
+		PanelConfigArray config4 = {configData[10], configData[11], configData[12], configData[16] };
 		configSystem.push_back(config1);
 		configSystem.push_back(config3);
 		configSystem.push_back(config4);
 	}
 	else if (configData[0] == 12) {      // 1 1 0 0
-		Array3 config1 = {configData[1] , configData[2] , configData[3] };
-		Array3 config2 = {configData[4] , configData[5] , configData[6] };
+		PanelConfigArray config1 = {configData[1] , configData[2] , configData[3] , configData[13] };
+		PanelConfigArray config2 = {configData[4] , configData[5] , configData[6] , configData[14] };
 		configSystem.push_back(config1);
 		configSystem.push_back(config2);
 	}
 	else if (configData[0] == 13) {      // 1 1 0 1
-		Array3 config1 = {configData[1] , configData[2] , configData[3] };
-		Array3 config2 = {configData[4] , configData[5] , configData[6] };
-		Array3 config4 = {configData[10], configData[11], configData[12]};
+		PanelConfigArray config1 = {configData[1] , configData[2] , configData[3] , configData[13] };
+		PanelConfigArray config2 = {configData[4] , configData[5] , configData[6] , configData[14] };
+		PanelConfigArray config4 = {configData[10], configData[11], configData[12], configData[16] };
 		configSystem.push_back(config1);
 		configSystem.push_back(config2);
 		configSystem.push_back(config4);
 	}
 	else if (configData[0] == 14) {      // 1 1 1 0
-		Array3 config1 = {configData[1] , configData[2] , configData[3] };
-		Array3 config2 = {configData[4] , configData[5] , configData[6] };
-		Array3 config3 = {configData[7] , configData[8] , configData[9] };
+		PanelConfigArray config1 = {configData[1] , configData[2] , configData[3] , configData[13] };
+		PanelConfigArray config2 = {configData[4] , configData[5] , configData[6] , configData[14] };
+		PanelConfigArray config3 = {configData[7] , configData[8] , configData[9] , configData[15]};
 		configSystem.push_back(config1);
 		configSystem.push_back(config2);
 		configSystem.push_back(config3);
 	}
 	else if (configData[0] == 15) {      // 1 1 1 1 
-		Array3 config1 = {configData[1] , configData[2] , configData[3] };
-		Array3 config2 = {configData[4] , configData[5] , configData[6] };
-		Array3 config3 = {configData[7] , configData[8] , configData[9] };
-		Array3 config4 = {configData[10], configData[11], configData[12]};
+		PanelConfigArray config1 = {configData[1] , configData[2] , configData[3] , configData[13] };
+		PanelConfigArray config2 = {configData[4] , configData[5] , configData[6] , configData[14] };
+		PanelConfigArray config3 = {configData[7] , configData[8] , configData[9] , configData[15]};
+		PanelConfigArray config4 = {configData[10], configData[11], configData[12], configData[16] };
 		configSystem.push_back(config1);
 		configSystem.push_back(config2);
 		configSystem.push_back(config3);
@@ -172,42 +176,39 @@ std::vector<Array3> setSystemData(Array13 configData) {
 	else {
 		throw eeros::EEROSException("Invalid config number");
 	}
+	
 	return configSystem;
 }
 
-// *** 3. Load system configuration (all)
-void LoadConfig_system(std::string fileName, std::array<double,13>* allPanelsData, std::vector<Array3>* systemDataPtr, 
-	Array60* sensArea_1, Array60*  sensArea_2, Array60* sensArea_3, Array60* sensArea_4) {
+void LoadConfig_Peep(std::string fileName, AllConfigArray* allPanelsData, std::vector<PanelConfigArray>* systemDataPtr, 
+	SensorsAreasArray* sensArea_1, SensorsAreasArray*  sensArea_2, SensorsAreasArray* sensArea_3, SensorsAreasArray* sensArea_4) {
 	PeepingPanelConfig configFile(fileName.c_str());
 	configFile.load();
 	
 	// 1. Config data
-	Array13 configData = configPanelData(configFile);
-	*systemDataPtr = setSystemData(configData);
+	AllConfigArray configData = setAllConfigData(configFile);
+	*systemDataPtr = setPanelConfigData(configData);
 	*allPanelsData = configData;
 	
 	// 2. Sensors data
-	Array15 visible1 = configFile.visible1;
-	Array15 close1   = configFile.close1  ;
-	Array15 near1    = configFile.near1   ;
-	Array15 far1     = configFile.far1    ;
-	Array15 visible2 = configFile.visible2;
-	Array15 close2   = configFile.close2  ;
-	Array15 near2    = configFile.near2   ;
-	Array15 far2     = configFile.far2    ;
-	Array15 visible3 = configFile.visible3;
-	Array15 close3   = configFile.close3  ;
-	Array15 near3    = configFile.near3   ;
-	Array15 far3     = configFile.far3    ;
-	Array15 visible4 = configFile.visible4;
-	Array15 close4   = configFile.close4  ;
-	Array15 near4    = configFile.near4   ;
-	Array15 far4     = configFile.far4    ;
+	std::array<int,15> visible1 = configFile.visible1;
+	std::array<int,15> close1   = configFile.close1  ;
+	std::array<int,15> near1    = configFile.near1   ;
+	std::array<int,15> far1     = configFile.far1    ;
+	std::array<int,15> visible2 = configFile.visible2;
+	std::array<int,15> close2   = configFile.close2  ;
+	std::array<int,15> near2    = configFile.near2   ;
+	std::array<int,15> far2     = configFile.far2    ;
+	std::array<int,15> visible3 = configFile.visible3;
+	std::array<int,15> close3   = configFile.close3  ;
+	std::array<int,15> near3    = configFile.near3   ;
+	std::array<int,15> far3     = configFile.far3    ;
+	std::array<int,15> visible4 = configFile.visible4;
+	std::array<int,15> close4   = configFile.close4  ;
+	std::array<int,15> near4    = configFile.near4   ;
+	std::array<int,15> far4     = configFile.far4    ;
 	
-	for(int i = 0; i < 15; i++)
-		std::cout << visible1[i] << "; " << close1[i] << "; " << near1[i] << "; " << far1[i] << std::endl;
-
-	Array60 sa1, sa2, sa3, sa4;
+	SensorsAreasArray sa1, sa2, sa3, sa4;
 	
 	int i = 0;
 	while(i<60){
@@ -246,3 +247,12 @@ void LoadConfig_system(std::string fileName, std::array<double,13>* allPanelsDat
 	std::cout << "Configuration file loaded"  << std::endl;
 }
 
+void LoadConfig_Teach(std::string fileName, AllConfigArray* allPanelsData) {
+	PeepingPanelConfig configFile(fileName.c_str());
+	configFile.load();
+	
+	AllConfigArray configData = setAllConfigData(configFile);
+	*allPanelsData = configData;
+	
+	std::cout << "Configuration file loaded"  << std::endl;
+}

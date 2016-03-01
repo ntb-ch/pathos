@@ -20,7 +20,7 @@ using namespace eeros;
 using namespace eeros::hal;
 using namespace eeros::safety;
 
-SafetyProperties_Peep::SafetyProperties_Peep(std::vector<ControlSystem_Peep*> cs, std::array<double,13> configIn) : 
+SafetyProperties_Peep::SafetyProperties_Peep(std::vector<ControlSystem_Peep*> cs, AllConfigArray configIn) : 
 	configData(configIn), controlSystems(cs), homedCounter(0), teachingCounter(0), firstHoming(true), robotHomed(false)  {
 	
 	HAL& hal = HAL::instance();
@@ -322,7 +322,7 @@ bool SafetyProperties_Peep::allTrue(std::array<bool,4> v) {
 	return prev;
 }
 
-std::vector<double> SafetyProperties_Peep::setPeepDirection(std::array<double,13> configData) {
+std::vector<double> SafetyProperties_Peep::setPeepDirection(AllConfigArray configData) {
 	std::vector<double> peep_direction;
 	
 	if(configData[0] == 1){              // 0 0 0 1
@@ -394,7 +394,7 @@ std::vector<double> SafetyProperties_Peep::setPeepDirection(std::array<double,13
 	return peep_direction;
 }
 
-std::vector<eeros::hal::ScalablePeripheralInput<double>*> SafetyProperties_Peep::setEncoderInputs(std::array<double,13> configData, HAL& hal) {
+std::vector<eeros::hal::ScalablePeripheralInput<double>*> SafetyProperties_Peep::setEncoderInputs(AllConfigArray configData, HAL& hal) {
 	std::vector<eeros::hal::ScalablePeripheralInput<double>*> enc;
 	
 	if(configData[0] == 1){              // 0 0 0 1
@@ -466,7 +466,7 @@ std::vector<eeros::hal::ScalablePeripheralInput<double>*> SafetyProperties_Peep:
 	return enc;
 }
 	
-std::vector<eeros::hal::PeripheralInput<bool>*> SafetyProperties_Peep::setReadyInputs(std::array<double,13> configData, HAL& hal) {
+std::vector<eeros::hal::PeripheralInput<bool>*> SafetyProperties_Peep::setReadyInputs(AllConfigArray configData, HAL& hal) {
 	std::vector<eeros::hal::PeripheralInput<bool>*> readySig;
 	
 	if(configData[0] == 1){              // 0 0 0 1

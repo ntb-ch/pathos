@@ -1,14 +1,13 @@
 #include "../control/ControlSystem_Peep.hpp"
 #include "../control/ControlSystem_Teach.hpp"
 #include <iostream>
+#include "../types.hpp"
 
 using namespace pathos::peepingpanel;
-using Array13 = std::array<double, 13>;
-using Array60 = std::array<int   , 60>;
 
-std::vector<ControlSystem_Peep*> CreateControlSystem(std::array<double,13> configData, 
-													 Array60 sensorsArea_1, Array60 sensorsArea_2, 
-													 Array60 sensorsArea_3, Array60 sensorsArea_4, 
+std::vector<ControlSystem_Peep*> CreateControlSystem(AllConfigArray configData, 
+													 SensorsAreasArray sensorsArea_1, SensorsAreasArray sensorsArea_2, 
+													 SensorsAreasArray sensorsArea_3, SensorsAreasArray sensorsArea_4, 
 													 SensorsThread* sensorsThread) 
 
 {
@@ -100,7 +99,7 @@ std::vector<ControlSystem_Peep*> CreateControlSystem(std::array<double,13> confi
 	return controlSystems;
 }
 
-std::vector<ControlSystem_Teach*> CreateControlSystem_teach(std::array<double,13> configData) {
+std::vector<ControlSystem_Teach*> CreateControlSystem_teach(AllConfigArray configData) {
 	std::vector<ControlSystem_Teach*> controlSystems;
 	int config = configData[0];
 	

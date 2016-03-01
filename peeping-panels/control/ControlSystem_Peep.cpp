@@ -7,7 +7,7 @@ using namespace eeros::hal;
 using namespace pathos::peepingpanel;
  
 ControlSystem_Peep::ControlSystem_Peep(std::string enc_id, std::string dac_id, SensorsThread* sensThread, 
-									   std::array<int,60> sensAreas) :
+									   SensorsAreasArray sensAreas) :
 
 sensorsInputData(sensThread, sensAreas),
 enc(enc_id),

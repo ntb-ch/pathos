@@ -20,7 +20,7 @@ using namespace eeros;
 using namespace eeros::hal;
 using namespace eeros::safety;
 
-SafetyProperties_Teach::SafetyProperties_Teach(std::vector<ControlSystem_Teach*> cs, std::array<double,13> configIn) : 
+SafetyProperties_Teach::SafetyProperties_Teach(std::vector<ControlSystem_Teach*> cs, AllConfigArray configIn) : 
 	configData(configIn), controlSystems(cs)  {
 	
 	HAL& hal = HAL::instance();
@@ -331,7 +331,7 @@ bool SafetyProperties_Teach::allTrue(std::array<bool,4> v) {
 	return prev;
 }
 
-std::vector<double> SafetyProperties_Teach::setPeepDirection(std::array<double,13> configData) {
+std::vector<double> SafetyProperties_Teach::setPeepDirection(AllConfigArray configData) {
 	std::vector<double> peep_direction;
 	
 	if(configData[0] == 1){              // 0 0 0 1
@@ -403,7 +403,7 @@ std::vector<double> SafetyProperties_Teach::setPeepDirection(std::array<double,1
 	return peep_direction;
 }
 
-std::vector<eeros::hal::ScalablePeripheralInput<double>*> SafetyProperties_Teach::setEncoderInputs(std::array<double,13> configData, HAL& hal) {
+std::vector<eeros::hal::ScalablePeripheralInput<double>*> SafetyProperties_Teach::setEncoderInputs(AllConfigArray configData, HAL& hal) {
 	std::vector<eeros::hal::ScalablePeripheralInput<double>*> enc;
 	
 	if(configData[0] == 1){              // 0 0 0 1
@@ -475,7 +475,7 @@ std::vector<eeros::hal::ScalablePeripheralInput<double>*> SafetyProperties_Teach
 	return enc;
 }
 	
-std::vector<eeros::hal::PeripheralInput<bool>*> SafetyProperties_Teach::setReadyInputs(std::array<double,13> configData, HAL& hal) {
+std::vector<eeros::hal::PeripheralInput<bool>*> SafetyProperties_Teach::setReadyInputs(AllConfigArray configData, HAL& hal) {
 	std::vector<eeros::hal::PeripheralInput<bool>*> readySig;
 	
 	if(configData[0] == 1){              // 0 0 0 1

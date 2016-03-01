@@ -63,7 +63,7 @@ namespace pathos {
 		class SafetyProperties_Peep : public eeros::safety::SafetyProperties {
 
 			public:
-				SafetyProperties_Peep(std::vector<ControlSystem_Peep*> cs, std::array<double,13> configIn);
+				SafetyProperties_Peep(std::vector<ControlSystem_Peep*> cs, AllConfigArray configIn);
 				virtual ~SafetyProperties_Peep();
 			
 				// critical outputs
@@ -79,11 +79,11 @@ namespace pathos {
 				virtual bool isDacZero();
 				virtual bool allTrue(std::array<bool,4> v);
 				virtual bool isPosErrorZero();
-				virtual std::vector<double> setPeepDirection(std::array<double,13> configData);
-				virtual std::vector<eeros::hal::ScalablePeripheralInput<double>*> setEncoderInputs(std::array<double,13> configData, eeros::hal::HAL& hal);
-				virtual std::vector<eeros::hal::PeripheralInput<bool>*> setReadyInputs(std::array<double,13> configData, eeros::hal::HAL& hal);
+				virtual std::vector<double> setPeepDirection(AllConfigArray configData);
+				virtual std::vector<eeros::hal::ScalablePeripheralInput<double>*> setEncoderInputs(AllConfigArray configData, eeros::hal::HAL& hal);
+				virtual std::vector<eeros::hal::PeripheralInput<bool>*> setReadyInputs(AllConfigArray configData, eeros::hal::HAL& hal);
 				
-				std::array<double,13> configData;
+				AllConfigArray configData;
 				std::vector<double> peep_direction;
 				double err = 0.00001;
 				
