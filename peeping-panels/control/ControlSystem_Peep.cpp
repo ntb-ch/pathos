@@ -15,8 +15,6 @@ pathPlanner(velMax, accMax, decMax, dt),
 i_ref(i_gear),
 kp(pos_ctrl_gain),
 kv(vel_ctrl_gain),
-speedInit(0.0),
-speedSwitch(0),
 inertia(J_motor),
 inv_km(1.0/km),
 dac_saturation(10.0),
@@ -31,7 +29,6 @@ timedomain("Main time domain", dt, true)
     // Configure Blocks
 	sumPos.negateInput(1);
 	sumVel.negateInput(1);
-	speedSwitch.switchToInput(0);
 	dacSwitch.switchToInput(0);
 	dac_saturation.enable();
 	
@@ -47,9 +44,7 @@ timedomain("Main time domain", dt, true)
 	kp.getIn().connect(sumPos.getOut());
 	sumVelRef.getIn(0).connect(kp.getOut());
 	sumVelRef.getIn(1).connect(refSpeed.getOut());
-	speedSwitch.getIn(0).connect(speedInit.getOut());
-	speedSwitch.getIn(1).connect(sumVelRef.getOut());
-	sumVel.getIn(0).connect(speedSwitch.getOut());
+	sumVel.getIn(0).connect(sumVelRef.getOut());
 	sumVel.getIn(1).connect(encSpeed.getOut());
 	kv.getIn().connect(sumVel.getOut());
 	inertia.getIn().connect(kv.getOut());
@@ -75,8 +70,6 @@ timedomain("Main time domain", dt, true)
 	timedomain.addBlock(&kp);
 	timedomain.addBlock(&sumVelRef);
 	timedomain.addBlock(&encSpeed);
-	timedomain.addBlock(&speedInit);
-	timedomain.addBlock(&speedSwitch);
 	timedomain.addBlock(&sumVel);
 	timedomain.addBlock(&kv);
 	timedomain.addBlock(&inertia);

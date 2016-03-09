@@ -50,9 +50,6 @@ namespace pathos {
 				eeros::control::Gain<AxisVector,AxisVector> inertia;
 				eeros::control::Gain<AxisVector,AxisVector> inv_km;
 				
-				eeros::control::Constant<AxisVector> speedInit; 
-				eeros::control::Switch<2,AxisVector> speedSwitch;
-				
 				eeros::control::DeMux<1,double,AxisVector> demux_dac;
 				eeros::control::Saturation<double> dac_saturation;
 				

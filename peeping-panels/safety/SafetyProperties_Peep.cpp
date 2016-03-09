@@ -194,25 +194,22 @@ SafetyProperties_Peep::SafetyProperties_Peep(std::vector<ControlSystem_Peep*> cs
 		// Set initialization speed (set speed only first time)
 		if(first) {
 			for(int i = 0; i < controlSystems.size(); i++){
-				controlSystems[i]->speedInit.setValue(initialization_speed * peep_direction[i]);
+				controlSystems[i]->pathPlanner.move(11.0);
 			}
 			first = false;
 		}
 		
 		// Check if initialized
-		static int count = 0;
-		if(count > 1000){ // 500
-			for(int i = 0; i < controlSystems.size(); i++){
-				auto dac = controlSystems[i]->dac.getIn().getSignal().getValue();
-				if(dac<-initialization_dac_lim || dac>initialization_dac_lim) homed[i] = true;
-				
-				if(homed[i]){
-					controlSystems[i]->speedInit.setValue(0.0);
-					controlSystems[i]->initAngle = controlSystems[i]->enc.getOut().getSignal().getValue();
-				}
+		for(int i = 0; i < controlSystems.size(); i++){
+			auto torque = controlSystems[i]->inertia.getOut().getSignal().getValue();
+			if(fabs(torque)>torque_init_lim) homed[i] = true;
+			
+			if(homed[i]){
+				controlSystems[i]->pathPlanner.reset(); 
+				controlSystems[i]->initAngle = controlSystems[i]->enc.getOut().getSignal().getValue();
 			}
 		}
-		count++;
+		
 		// Check if all axes are homed
 		if(allTrue(homed)) privateContext->triggerEvent(homingDone);
 	});
@@ -242,10 +239,6 @@ SafetyProperties_Peep::SafetyProperties_Peep(std::vector<ControlSystem_Peep*> cs
 				// Set init position path planner
 				for (auto &cs : controlSystems)
 					cs->pathPlanner.setInitPos(cs->sum_enc_offset.getOut().getSignal().getValue() / i_gear);
-				
-				// Switch to position control
-				for (auto &cs : controlSystems)
-					cs->speedSwitch.switchToInput(1);
 
 				for (auto &cs : controlSystems){
 					std::cout << "SS -> pp : " << cs->i_ref.getOut().getSignal().getValue() << std::endl;
