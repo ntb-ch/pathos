@@ -203,7 +203,7 @@ SafetyProperties_Teach::SafetyProperties_Teach(std::vector<ControlSystem_Teach*>
 		// Set initialization speed (set speed only first time)
 		if(first) {
 			for(int i = 0; i < controlSystems.size(); i++){
-				controlSystems[i]->pathPlanner.move(11.0);
+				controlSystems[i]->pathPlanner.move(pos_init_lim * peep_direction[i]);
 			}
 			first = false;
 		}
@@ -233,27 +233,22 @@ SafetyProperties_Teach::SafetyProperties_Teach(std::vector<ControlSystem_Teach*>
 				// Set safety system variables
 				firstHoming = false;
 				robotHomed = true;
-			}
-			
-			// Set init position path planner
-			for (auto &cs : controlSystems)
-				cs->pathPlanner.setInitPos(cs->sum_enc_offset.getOut().getSignal().getValue() / i_gear); 
-			
-			if(!isPosErrorZero()){
 				// Set init position path planner
 				for (auto &cs : controlSystems)
 					cs->pathPlanner.setInitPos(cs->sum_enc_offset.getOut().getSignal().getValue() / i_gear);
 			}
-			else{
-				// Set init position path planner
-				for (auto &cs : controlSystems)
-					cs->pathPlanner.setInitPos(cs->sum_enc_offset.getOut().getSignal().getValue() / i_gear);
-	
+
+			if(isPosErrorZero()){
 				for (auto &cs : controlSystems){
 					std::cout << "SS -> pp : " << cs->i_ref.getOut().getSignal().getValue() << std::endl;
 					std::cout << "SS -> enc: " << cs->sum_enc_offset.getOut().getSignal().getValue() << std::endl;
 				}
 				privateContext->triggerEvent(doReady);
+			}
+			else{
+				// Set init position path planner
+				for (auto &cs : controlSystems)
+					cs->pathPlanner.setInitPos(cs->sum_enc_offset.getOut().getSignal().getValue() / i_gear);
 			}
 		}
 	});
@@ -304,7 +299,7 @@ bool SafetyProperties_Teach::isPosErrorZero() {
 	for (int i = 0; i < controlSystems.size(); i++){
 		AxisVector refVal = controlSystems[i]->i_ref.getOut().getSignal().getValue(); 
 		AxisVector actVal = controlSystems[i]->sum_enc_offset.getOut().getSignal().getValue();
-		if(fabs(refVal-actVal)>err || fabs(actVal)>0.6)
+		if(fabs(refVal-actVal)>err || fabs(actVal)> ((init_pos * i_gear) * 1.1))
 			isZero = false;
 		else
 			isZero = true;

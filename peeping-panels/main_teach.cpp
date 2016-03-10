@@ -43,13 +43,13 @@ int main() {
 		
 	// Create Control Systems
 	std::vector<ControlSystem_Teach*> controlSystems = CreateControlSystem_teach(allPanelsData);   
+	
+	// Initialize logger
+	Logger<LogWriter>::setDefaultWriter(&w);
 
 	// Create the safety system
 	SafetyProperties_Teach safetyProperties(controlSystems, allPanelsData);
 	SafetySystem safetySystem(safetyProperties, dt);
-	
-	// Initialize logger
-	Logger<LogWriter>::setDefaultWriter(&w);
 	
 	// Get and Start Sequencer
 	std::vector<Sequencer*> sequencers;

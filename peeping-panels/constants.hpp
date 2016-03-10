@@ -24,7 +24,8 @@ namespace pathos {
 		static eeros::math::Matrix<1,1,double> pos_ctrl_gain = 80.0;                     // Position control gain
 		static eeros::math::Matrix<1,1,double> vel_ctrl_gain = 20.0; // 120.0;           // Position control gain
 		
-		static constexpr double torque_init_lim = 0.2;
+		static constexpr double pos_init_lim    = -11.0;
+		static constexpr double torque_init_lim =   0.2;
 		static eeros::math::Matrix<1,1,double> ready_pos = 0.0;
 		static eeros::math::Matrix<1,1,double> init_pos = (5.0) * (pi/180.0); // (4.0)
 		
