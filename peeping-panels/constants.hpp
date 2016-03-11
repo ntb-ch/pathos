@@ -27,7 +27,7 @@ namespace pathos {
 		static constexpr double pos_init_lim    = -11.0;
 		static constexpr double torque_init_lim =   0.2;
 		static eeros::math::Matrix<1,1,double> ready_pos = 0.0;
-		static eeros::math::Matrix<1,1,double> init_pos = (5.0) * (pi/180.0); // (4.0)
+		static eeros::math::Matrix<1,1,double> init_pos = -1.0 * (5.0) * (pi/180.0); // (4.0)
 		
 	}
 }

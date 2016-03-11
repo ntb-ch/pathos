@@ -218,9 +218,9 @@ SafetyProperties_Peep::SafetyProperties_Peep(std::vector<ControlSystem_Peep*> cs
 		if(homedCounter++ > 0) { 
 			if(firstHoming && !robotHomed) {
 				// Set encoder offset
-				for(int i = 0; i < controlSystems.size(); i++){
-					controlSystems[i]->enc_offset.setValue((controlSystems[i]->initAngle - init_pos*i_gear) * peep_direction[i]);
-				}
+				for(int i = 0; i < controlSystems.size(); i++)
+					controlSystems[i]->enc_offset.setValue( -1.0 * controlSystems[i]->initAngle + (init_pos*i_gear*peep_direction[i]));
+				
 				// Set safety system variables
 				firstHoming = false;
 				robotHomed = true;
@@ -229,13 +229,8 @@ SafetyProperties_Peep::SafetyProperties_Peep(std::vector<ControlSystem_Peep*> cs
 					cs->pathPlanner.setInitPos(cs->sum_enc_offset.getOut().getSignal().getValue() / i_gear);
 			}
 
-			if(isPosErrorZero()){
-				for (auto &cs : controlSystems){
-					std::cout << "SS -> pp : " << cs->i_ref.getOut().getSignal().getValue() << std::endl;
-					std::cout << "SS -> enc: " << cs->sum_enc_offset.getOut().getSignal().getValue() << std::endl;
-				}
+			if(isPosErrorZero())
 				privateContext->triggerEvent(doReady);
-			}
 			else{
 				// Set init position path planner
 				for (auto &cs : controlSystems)
@@ -290,7 +285,7 @@ bool SafetyProperties_Peep::isPosErrorZero() {
 	for (int i = 0; i < controlSystems.size(); i++){
 		AxisVector refVal = controlSystems[i]->i_ref.getOut().getSignal().getValue(); 
 		AxisVector actVal = controlSystems[i]->sum_enc_offset.getOut().getSignal().getValue();
-		if(fabs(refVal-actVal)>err || fabs(actVal)> ((init_pos * i_gear) * 1.1))
+		if(fabs(refVal-actVal)>err || fabs(actVal)> fabs((init_pos * i_gear) * 1.3))
 			isZero = false;
 		else
 			isZero = true;
