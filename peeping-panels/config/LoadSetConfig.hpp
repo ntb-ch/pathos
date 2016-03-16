@@ -47,7 +47,7 @@ AllConfigArray setAllConfigData(PeepingPanelConfig configFile) {
 	else
 		throw EEROSException("Wrong config time ( > 0)");
 	
-	if(configFile.peep_direction3 == 3.0 || configFile.peep_direction3 == -1.0)
+	if(configFile.peep_direction3 == 1.0 || configFile.peep_direction3 == -1.0)
 		configData[8] = configFile.peep_direction3;
 	else
 		throw EEROSException("Wrong direction input, check input file");

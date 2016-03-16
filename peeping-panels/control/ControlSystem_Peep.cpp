@@ -2,6 +2,7 @@
 #include <eeros/hal/HAL.hpp>
 #include "../constants.hpp"
 #include <iostream>
+#include <eeros/core/Executor.hpp>
  
 using namespace eeros::hal;
 using namespace pathos::peepingpanel;
@@ -80,13 +81,14 @@ timedomain("Main time domain", dt, true)
 	timedomain.addBlock(&dac_saturation);
 	timedomain.addBlock(&dac);
 	
+	eeros::Executor::instance().add(timedomain);
 }
  
 void ControlSystem_Peep::start() {
-    timedomain.start();
+//     timedomain.start();
 }
  
 void ControlSystem_Peep::stop() {
-    timedomain.stop();
-    timedomain.join();  
+//     timedomain.stop();
+//     timedomain.join();  
 }

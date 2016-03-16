@@ -9,6 +9,7 @@
 #include <eeros/sequencer/Sequencer.hpp>
 #include <eeros/core/EEROSException.hpp>
 #include <pathos/Hardware.hpp>
+#include <eeros/core/Executor.hpp>
 
 #include "control/ControlSystem_Teach.hpp"
 #include "safety/SafetyProperties_Teach.hpp"
@@ -41,15 +42,24 @@ int main() {
 	AllConfigArray allPanelsData;
 	LoadConfig_Teach("/mnt/data/curves/configsystem.txt", &allPanelsData);
 		
+	// Start sensors data thread
+	SensorsThread sensorsThread;
+	while(!sensorsThread.isRunning()) usleep(100000);
+	
 	// Create Control Systems
 	std::vector<ControlSystem_Teach*> controlSystems = CreateControlSystem_teach(allPanelsData);   
 	
 	// Initialize logger
 	Logger<LogWriter>::setDefaultWriter(&w);
-
+	
+	auto &executor = Executor::instance();
+	executor.setPeriod(dt);
+	
 	// Create the safety system
 	SafetyProperties_Teach safetyProperties(controlSystems, allPanelsData);
 	SafetySystem safetySystem(safetyProperties, dt);
+		
+	executor.setMainTask(safetySystem);
 	
 	// Get and Start Sequencer
 	std::vector<Sequencer*> sequencers;
@@ -60,41 +70,27 @@ int main() {
 		sequencers[i]->start(mainSequences[i]);
 	}
 	
-	// Stay in the loop while the program is running
-	bool isTerminated = false;
-	bool runningSeq = true;
-	while(running && runningSeq) {
-		usleep(1000000);
-		// Chek if all sequence have terminated
-		bool prev = true;
-		for (int i = 0; i < sequencers.size(); i++){
-			bool istrue;
-			if (sequencers[i]->getState() == state::terminated){ 
-				istrue = true; 
-				std::cout << "terminated" << std::endl;
-				
-			}
-			else      istrue = false;
-			prev = prev && istrue;
-		}
-		runningSeq = !prev;
-	}
-
+	executor.run();
+	
 	// Safe control system shut down
 	for (int i = 0; i < controlSystems.size(); i++){
 		controlSystems[i]->dacSwitch.switchToInput(0);
-		controlSystems[i]->stop();
+		controlSystems[i]->timedomain.run();
 	}
 	// Shut down safety system
 	safetySystem.triggerEvent(doPoweringDown);
-	while(safetySystem.getCurrentLevel().getId() > off) 
-		usleep(100000);
-	safetySystem.shutdown();
-
+	while(safetySystem.getCurrentLevel().getId() > off) {
+	  usleep(2000);
+	  safetySystem.run();
+	}
 	// Remove elements from vectors
 	controlSystems.clear();
 	sequencers.clear();
 	mainSequences.clear();
+	
+	// Stop sensors communication
+	sensorsThread.stop();
+	sensorsThread.join();
 	
 	return 0;
 }

@@ -2,6 +2,7 @@
 #include <signal.h>
 #include <iostream>
 
+#include <eeros/core/Executor.hpp>
 #include <eeros/safety/SafetySystem.hpp>
 #include <eeros/logger/Logger.hpp>
 #include <eeros/logger/StreamLogWriter.hpp> 
@@ -59,9 +60,14 @@ int main() {
 	if(configSystem.size() != controlSystems.size())
 		throw EEROSException("Wrong settings, program will be stopped");
 	
+	auto &executor = Executor::instance();
+	executor.setPeriod(dt);
+		
 	// Create the safety system
 	SafetyProperties_Peep safetyProperties(controlSystems, allPanelsData);
 	SafetySystem safetySystem(safetyProperties, dt);
+	
+	executor.setMainTask(safetySystem);
 	
 	// Get Sequencer
 	std::vector<Sequencer*> sequencers;
@@ -72,32 +78,19 @@ int main() {
 		sequencers[i]->start(mainSequences[i]);
 	}
 	
-	// Stay in the loop while the program is running
-	bool isTerminated = false;
-	bool runningSeq = true;
-	while(running && runningSeq) {
-		usleep(1000000);
-		// Chek if all sequence have terminated
-		bool prev = true;
-		for (int i = 0; i < sequencers.size(); i++){
-			bool istrue;
-			if (sequencers[i]->getState() == state::terminated) istrue = true;
-			else  istrue = false;
-			prev = prev && istrue;
-		}
-		runningSeq = !prev;
-	}
+	executor.run();
 
 	// Safe control system shut down
 	for (int i = 0; i < controlSystems.size(); i++){
 		controlSystems[i]->dacSwitch.switchToInput(0);
-		controlSystems[i]->stop();
+		controlSystems[i]->timedomain.run();
 	}
 	// Shut down safety system
 	safetySystem.triggerEvent(doPoweringDown);
-	while(safetySystem.getCurrentLevel().getId() > off) usleep(100000);
-	safetySystem.shutdown();
-	
+	while(safetySystem.getCurrentLevel().getId() > off) {
+	  usleep(2000);
+	  safetySystem.run();
+	}
 	// Remove elements from vectors
 	configSystem.clear();
 	controlSystems.clear();
