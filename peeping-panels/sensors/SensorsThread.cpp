@@ -67,7 +67,18 @@ void SensorsThread::run() {
 	if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) 
 		error("ERROR on binding");
 	printf("\n- Connected to client IP --> %s \n!", inet_ntoa(serv_addr.sin_addr) );
-		
+	
+// 	TEST
+// 	running = true;
+// 	
+// 	while(running){
+// 		listen(sockfd,1);
+// 		clilen = sizeof(cli_addr);
+// 		newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr,  &clilen);
+// 		if (newsockfd < 0) {} // do nothing ...   error("ERROR on accept");
+// 		else break; 
+// 	}
+	
 	listen(sockfd,1);
 	clilen = sizeof(cli_addr);
 	newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr,  &clilen);

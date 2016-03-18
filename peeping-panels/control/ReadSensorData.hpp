@@ -31,14 +31,17 @@ namespace pathos {
 			
 			virtual eeros::control::Output<int>& getOutStatus();
 			virtual eeros::control::Output<int>& getOutPrevStatus();
+			
+			int sbdFcn1, sbdFcn2, sbdFcn3, sbdFcn4, sbdFcn5;
+			
 			virtual void run();
 			
-		protected:
+// 		protected:
 			eeros::control::Output<int> status;
 			eeros::control::Output<int> prevStatus;
 			
 			virtual std::vector<int> defineCells(std::array<int,15> data);
-			virtual bool isSomebody (std::array<bool,NUM_ID> sensors_data, std::vector<int> data);
+			virtual int isSomebody (std::array<bool,NUM_ID> sensors_data, std::vector<int> data);
 			
 			SensorsThread* sensorsThread;
 			std::array<int,60> sensorsAreas;
