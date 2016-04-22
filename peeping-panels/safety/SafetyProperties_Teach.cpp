@@ -21,7 +21,7 @@ using namespace eeros::hal;
 using namespace eeros::safety;
 
 SafetyProperties_Teach::SafetyProperties_Teach(std::vector<ControlSystem_Teach*> cs, AllConfigArray configIn) : 
-	configData(configIn), controlSystems(cs)  {
+	configData(configIn), controlSystems(cs), homedCounter(0), firstHoming(true), robotHomed(false)  {
 	
 	HAL& hal = HAL::instance();
 	
@@ -129,18 +129,9 @@ SafetyProperties_Teach::SafetyProperties_Teach(std::vector<ControlSystem_Teach*>
 	level(teaching        ).setOutputActions({ set(enable, false) });
 	
 	// *** Define and add level functions *** //
-
-	int &homedCounter     = * new int; homedCounter     = 0;
-	int &teachingCounter  = * new int; teachingCounter  = 0;
-	int &balancingCounter = * new int; balancingCounter = 0;
-	int &highSpeedCounter = * new int; highSpeedCounter = 0;
-	int &stopMoveCounter  = * new int; stopMoveCounter  = 0;
-	
-	static bool firstHoming = true;
-	static bool robotHomed  = false;
 	
 	// Boot
-	level(off).setLevelAction([&](SafetyContext* privateContext) {
+	level(off).setLevelAction([](SafetyContext* privateContext) {
 		static bool first = true; 
 		if(first == true) {
 			privateContext->triggerEvent(doSwInit);
@@ -148,19 +139,19 @@ SafetyProperties_Teach::SafetyProperties_Teach(std::vector<ControlSystem_Teach*>
 		}
 	});
 	
-	level(swInitializing).setLevelAction([&](SafetyContext* privateContext) {
+	level(swInitializing).setLevelAction([](SafetyContext* privateContext) {
 		privateContext->triggerEvent(swInitDone); 
 	});
-	level(swInitialized).setLevelAction([&](SafetyContext* privateContext) {
+	level(swInitialized).setLevelAction([](SafetyContext* privateContext) {
 		privateContext->triggerEvent(doControlStart); 
 	});
-	level(controlStarting).setLevelAction([&](SafetyContext* privateContext) {
+	level(controlStarting).setLevelAction([this](SafetyContext* privateContext) {
 		for (auto &cs : controlSystems){
 			cs->start();
 		}
 		privateContext->triggerEvent(controlStartingDone); 
 	});
-	level(controlStopping).setLevelAction([&](SafetyContext* privateContext) {
+	level(controlStopping).setLevelAction([this](SafetyContext* privateContext) {
 		for (auto &cs : controlSystems){
 			cs->stop();
 		}
@@ -169,10 +160,10 @@ SafetyProperties_Teach::SafetyProperties_Teach(std::vector<ControlSystem_Teach*>
 		peep_direction.clear();
 		privateContext->triggerEvent(controlStoppingDone); 
 	});
-	level(poweringDown).setLevelAction([&](SafetyContext* privateContext) {
+	level(poweringDown).setLevelAction([](SafetyContext* privateContext) {
 		privateContext->triggerEvent(poweringDownDone); 
 	});
-	level(systemOn).setLevelAction([&](SafetyContext* privateContext) {
+	level(systemOn).setLevelAction([this](SafetyContext* privateContext) {
 		static int count = 0;
 		if(count > 1000){
 			std::cout << controlSystems[0]->dac.getIn().getSignal().getValue() << std::endl;
@@ -188,14 +179,14 @@ SafetyProperties_Teach::SafetyProperties_Teach(std::vector<ControlSystem_Teach*>
 		}
 	});
 	
-	level(poweringUp).setLevelAction([&](SafetyContext* privateContext) {
+	level(poweringUp).setLevelAction([](SafetyContext* privateContext) {
 		privateContext->triggerEvent(poweringUpDone); 
 	});
-	level(powerOn).setLevelAction([&](SafetyContext* privateContext) { 
+	level(powerOn).setLevelAction([](SafetyContext* privateContext) { 
 		privateContext->triggerEvent(doHoming); 
 	});
 	
-	level(homing).setLevelAction([&](SafetyContext* privateContext) {
+	level(homing).setLevelAction([this](SafetyContext* privateContext) {
 		homedCounter = 0;
 		static bool first = true;
 		static std::array<bool,4> homed;
@@ -223,7 +214,7 @@ SafetyProperties_Teach::SafetyProperties_Teach(std::vector<ControlSystem_Teach*>
 		if(allTrue(homed)) privateContext->triggerEvent(homingDone);
 	});
 	
-	level(homed).setLevelAction([&](SafetyContext* privateContext) {
+	level(homed).setLevelAction([this](SafetyContext* privateContext) {
 		if(homedCounter++ > 0) { 
 			if(firstHoming && !robotHomed) {
 				// Set encoder offset
@@ -253,7 +244,7 @@ SafetyProperties_Teach::SafetyProperties_Teach(std::vector<ControlSystem_Teach*>
 		}
 	});
 
-	level(goingToReady).setLevelAction([&](SafetyContext* privateContext) {
+	level(goingToReady).setLevelAction([this](SafetyContext* privateContext) {
 		static bool first = true;
 		static std::array<bool,4> ready;
 		

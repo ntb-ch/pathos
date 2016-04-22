@@ -6,6 +6,7 @@
 #include <eeros/control/Constant.hpp>
 #include "CanSendFaulhaber.hpp"
 #include "CanReceiveFaulhaber.hpp"
+#include "RadToPulses.hpp"
 #include <canopen-faulhaber-drv.h>
 
 namespace pathos {
@@ -16,10 +17,16 @@ namespace pathos {
 		public:
 			ControlSystem_decoy(int canSock, double ts);
 			virtual ~ControlSystem_decoy();
+			
+			virtual double getActualPos_rad();
+			virtual int getActualPos_pulses();
+			virtual bool isOperationEnabled();
 		
 			eeros::control::CanSendFaulhaber canSend;
 			eeros::control::CanReceiveFaulhaber canReceive;
-			eeros::control::Constant<int> setPos;
+			eeros::control::Constant<double> setPosRad;
+			pathos::decoy::RadToPulses setPosRad_toPulses;
+			
 			eeros::control::TimeDomain timedomain;
 		
 		private:

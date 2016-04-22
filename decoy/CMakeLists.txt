@@ -20,8 +20,11 @@ add_executable(decoy main_decoy.cpp
 			control/CanHandle.cpp
 			control/CanReceiveFaulhaber.cpp
 			control/CanSendFaulhaber.cpp
+			control/RadToPulses.cpp
 			
 			sequences/MainSequence_decoy.cpp
+			sequences/Homing.cpp
+			sequences/ArmMotion.cpp
 			safety/SafetyProperties_decoy.cpp
 		       )
 

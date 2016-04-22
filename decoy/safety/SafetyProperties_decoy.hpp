@@ -13,12 +13,14 @@ namespace pathos {
 		
 		// Define events
 		enum {
-		doOff = 1,
+			doOff = 1,
+			doEnable = 2,
 		};
 		
 		// Define levels
 		enum {
-		off = 1,
+			off = 1,
+			motorsEnabled = 2,
 		};
 		
 		class SafetyProperties_decoy : public eeros::safety::SafetyProperties {
@@ -26,9 +28,6 @@ namespace pathos {
 			public:
 				SafetyProperties_decoy(ControlSystem_decoy* cs);
 				virtual ~SafetyProperties_decoy();
-			
-				// outputs
-				// inputs
 			
 			private:
 				ControlSystem_decoy* controlSys;

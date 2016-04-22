@@ -22,23 +22,34 @@ SafetyProperties_decoy::SafetyProperties_decoy(ControlSystem_decoy* cs) : contro
 
 	HAL& hal = HAL::instance();
 
-	// ############ Define critical outputs ############
+	// Define critical outputs
 	
-	// ############ Define critical inputs ############
+	// Define critical inputs
 	
-	// ############ Define Levels ############
+	// Define Levels
 	levels = {
-		{ off,                "System off",                  }
+		{ off,          "System off",        },
+		{motorsEnabled, "Motors are active", }
 	};
 	
-	// ############ Add events to the levels ############
+	// Add events to the levels
+	level(off).addEvent(doEnable, motorsEnabled, kPrivateEvent);
 	
-	// ############ Define input states and events for all levels ############
-		
-	// Define output states and events for all levels 
-
+	// Set input actions
+	level(off          ).setInputActions({ });
+	level(motorsEnabled).setInputActions({ });
+	
+	// Set output actions
+	level(off          ).setOutputActions({ });  
+	level(motorsEnabled).setOutputActions({ });  
+	
 	// *** Define and add level functions *** //
 
+	level(off).setLevelAction([this](SafetyContext* privateContext) {
+		if(controlSys->isOperationEnabled())
+			privateContext->triggerEvent(doEnable);
+	});
+	
 	// Define entry level
 	entryLevel = off;
 }
