@@ -16,17 +16,19 @@ link_directories(${ADDITIONAL_LINK_DIRS})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 add_executable(decoy main_decoy.cpp
-			control/ControlSystem_decoy.cpp
 			control/CanHandle.cpp
 			control/CanReceiveFaulhaber.cpp
 			control/CanSendFaulhaber.cpp
+			control/ControlSystem_decoy.cpp
 			control/RadToPulses.cpp
 			
-			sequences/MainSequence_decoy.cpp
-			sequences/Homing.cpp
-			sequences/ArmMotion.cpp
 			safety/SafetyProperties_decoy.cpp
-		       )
+			
+			sequences/ArmMotion.cpp
+			sequences/Homing.cpp
+			sequences/MainSequence_decoy.cpp
+		)
 
 target_link_libraries(decoy eeros pathos canopen)
 INSTALL(TARGETS decoy RUNTIME DESTINATION bin)
+

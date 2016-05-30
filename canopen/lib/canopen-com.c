@@ -11,6 +11,7 @@
 //------------------------------------------------------------------------------
 
 #include "../include/canopen.h"
+#include "../include/can-if.h"
 #include "../include/canopen-com.h"
 
 #include <sys/types.h>
@@ -73,7 +74,7 @@ canopen_frame_recv(int sock, canopen_frame_t *canopen_frame)
     // set filters for our node?
 
     nbytes = read(sock, &can_frame, sizeof(struct can_frame));
-
+	
     if (nbytes < 0)
     {
         //perror("read: can raw socket read");
@@ -83,12 +84,13 @@ canopen_frame_recv(int sock, canopen_frame_t *canopen_frame)
     if (nbytes < (int)sizeof(struct can_frame))
     {
         fprintf(stderr, "read: incomplete CAN frame\n");
-        return 1;
+        return 11;
     }
 
     if (canopen_frame_parse(canopen_frame, &can_frame) != 0)
     {
         fprintf(stderr, "CANopen failed to parse frame\n");
+		return 111;
     }
 
     return 0;
@@ -174,6 +176,50 @@ canopen_sdo_upload_exp(int sock, uint8_t node, uint16_t index,
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
+/*int
+canopen_sdo_download_exp(int sock, uint8_t node,     uint16_t index, 
+                                   uint8_t subindex, uint32_t data, uint16_t len)
+{
+	printf("sock: %d\n", sock);
+    int frame_count = 0;
+    canopen_frame_t canopen_frame;
+
+    canopen_frame_set_sdo_idd(&canopen_frame, node, index, subindex, data, len);
+
+    if (canopen_frame_send(sock, &canopen_frame) != 0)
+    {
+        return -1;
+    }
+
+    if (can_filter_node_set(sock, node) < 0)
+    {
+        printf("%s: Error, failed to set CAN filters\n", __PRETTY_FUNCTION__);
+    }    
+
+    int errcode= 0;
+    while (frame_count < 1000)
+    {
+        if ((errcode = canopen_frame_recv(sock, &canopen_frame)) != 0)
+        {
+            printf("rcv: %d\n", errcode);
+			return -2;
+        }
+
+        if (canopen_frame.id == node && canopen_frame.function_code == CANOPEN_FC_SDO_TX)
+        {   
+            if (canopen_com_debug)
+                printf("DEBUG: GOT REPLY [%d]\n", frame_count);
+
+            return 0;
+        }
+
+        frame_count++;
+    }
+
+    return -3;
+}
+
+*/
 int
 canopen_sdo_download_exp(int sock, uint8_t node,     uint16_t index, 
                                    uint8_t subindex, uint32_t data, uint16_t len)
@@ -213,8 +259,6 @@ canopen_sdo_download_exp(int sock, uint8_t node,     uint16_t index,
 
     return 1;
 }
-
-
 //==============================================================================
 // SEGMENTED
 //==============================================================================

@@ -11,12 +11,17 @@ namespace pathos {
 		static constexpr double pi = 3.14159265359;       // Pi
 		static constexpr double g = 9.80665;              // Gravity acc    [m/s²]
 		
+		static constexpr double dt = 0.010;               // sample time
+		static constexpr int nofAxis = 5;
+		
 		// *** Can *** //
 		static constexpr int node_turning    = 0x01;
 		static constexpr int node_swingBack  = 0x02;
 		static constexpr int node_swingFront = 0x03;
 		static constexpr int node_armLeft    = 0x04;
 		static constexpr int node_armRight   = 0x05;
+		
+		static constexpr int nodes[nofAxis] = {node_turning, node_swingFront, node_swingBack, node_armLeft, node_armRight};
 		
 		static constexpr uint16_t statusWord    = 0x6041;
 		static constexpr int oneBitMask         = 0x002F;
@@ -33,18 +38,18 @@ namespace pathos {
 		static constexpr int turn_maxSpeed = 250.0;
 		static constexpr int turn_i = 14.0;              // Gear ratio
 		static constexpr int turn_i2 = 5.0;              // Driver ratio
-		static constexpr int turn_enc_pulse = 3000.0;    // Pulses/turn
+		static constexpr int turn_encPulse = 3000.0;    // Pulses/turn
 		
 		// Swing
-// 		static constexpr int swing_homingSpeed = 50;
-// 		static constexpr int swing_maxSpeed = 2500;
-// 		static constexpr int swing_i = 14;
-// 		static constexpr int swing_encPulse = 3000;   // pulses/turn
+		static constexpr int swing_homingSpeed = 50;
+		static constexpr int swing_maxSpeed = 2500;
+		static constexpr int swing_i = 14;
+		static constexpr int swing_encPulse = 3000;   // pulses/turn
 		
 		// Arms
 		static constexpr int arm_homingSpeed = 50.0;
 		static constexpr int arm_maxSpeed = 2500.0;
-		static constexpr int arm_i = 14.0;
+		static constexpr int arm_i = 23.0;
 		static constexpr int arm_encPulse = 3000.0;   // pulses/turn
 		
 
@@ -52,10 +57,6 @@ namespace pathos {
 };
 
 #endif /* CH_NTB_DECOY_CONSTANTS_HPP_ */
-
-		
-
-
 
 
 // 		static constexpr int switchOnDisabled    = 0x0040;  // TODO not sure (two bits "don't care)

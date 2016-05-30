@@ -33,31 +33,29 @@ CanReceiveFaulhaber::~CanReceiveFaulhaber(){
 
 void CanReceiveFaulhaber::run()
 {
-	if(enabled){
-		if(pdoRequested.getSignal().getValue() == true){
-			readLen = 0;
-			readLen = canopen_read_frame(sock, &readFrame);
-			if(readLen == EAGAIN || readLen == EWOULDBLOCK){
-				std::cout << "would block" << std::endl;
-			}
-			if(readLen > 0){
-				for(int i = 0; i < nodes.size(); i++){
-					if(readFrame.id == nodes[i]){		// check if frame.id (node) is registered
-						if( pdoData.find(readFrame.function_code) != pdoData.end()){
-							if(readFrame.data_len > 2){
-								pdoData[readFrame.function_code].userData = readFrame.payload.data[2] & 0x00FF;
-								pdoData[readFrame.function_code].userData |= ((readFrame.payload.data[3] & 0x00FF) << 8);
-								if(readFrame.data_len >= 4){
-									pdoData[readFrame.function_code].userData |= ((readFrame.payload.data[4] & 0x00FF) << 16);
-									pdoData[readFrame.function_code].userData |= ((readFrame.payload.data[5] & 0x00FF) << 24);
-								}
+	if(pdoRequested.getSignal().getValue() == true){
+		readLen = 0;
+		readLen = canopen_read_frame(sock, &readFrame);
+		if(readLen == EAGAIN || readLen == EWOULDBLOCK){
+			std::cout << "would block" << std::endl;
+		}
+		if(readLen > 0){
+			for(int i = 0; i < nodes.size(); i++){
+				if(readFrame.id == nodes[i]){		// check if frame.id (node) is registered
+					if( pdoData.find(readFrame.function_code) != pdoData.end()){
+						if(readFrame.data_len > 2){
+							pdoData[readFrame.function_code].userData = readFrame.payload.data[2] & 0x00FF;
+							pdoData[readFrame.function_code].userData |= ((readFrame.payload.data[3] & 0x00FF) << 8);
+							if(readFrame.data_len >= 4){
+								pdoData[readFrame.function_code].userData |= ((readFrame.payload.data[4] & 0x00FF) << 16);
+								pdoData[readFrame.function_code].userData |= ((readFrame.payload.data[5] & 0x00FF) << 24);
 							}
-							pdoData[readFrame.function_code].drvCtrl = readFrame.payload.data[0] & 0x00FF;
-							pdoData[readFrame.function_code].drvCtrl |= ((readFrame.payload.data[1] & 0x00FF) << 8);
-							pdoData[readFrame.function_code].nodeId = readFrame.id;
-	// 						std::cout << "node: " << nodes[i] << "\t fc: " << functionCodes[i] << "\t status: " << std::hex << pdoData[functionCodes[i]].drvCtrl << "\t data: " << std::dec << pdoData[functionCodes[i]].userData << std::endl;
-							pdoRequested.getSignal().setValue(false);
 						}
+						pdoData[readFrame.function_code].drvCtrl = readFrame.payload.data[0] & 0x00FF;
+						pdoData[readFrame.function_code].drvCtrl |= ((readFrame.payload.data[1] & 0x00FF) << 8);
+						pdoData[readFrame.function_code].nodeId = readFrame.id;
+// 						std::cout << "node: " << nodes[i] << "\t fc: " << functionCodes[i] << "\t status: " << std::hex << pdoData[functionCodes[i]].drvCtrl << "\t data: " << std::dec << pdoData[functionCodes[i]].userData << std::endl;
+						pdoRequested.getSignal().setValue(false);
 					}
 				}
 			}
@@ -76,12 +74,4 @@ int CanReceiveFaulhaber::getPdoValue(int32_t nodeId, uint8_t functionCode, int16
 	}
 	throw eeros::EEROSException("getPdoValue: no such node");
 	return -1;
-}
-
-void CanReceiveFaulhaber::enable(){
-	enabled = true;
-}
-
-void CanReceiveFaulhaber::disable(){
-	enabled = false;
 }

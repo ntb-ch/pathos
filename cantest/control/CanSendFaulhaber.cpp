@@ -20,19 +20,19 @@ CanSendFaulhaber::~CanSendFaulhaber() {
 
 void CanSendFaulhaber::run() {
 	
-	if(enabled){
-		for(int i = 0; i < in.size(); i++){
-			if( in[i]->getSignal().getValue() != lastPosValue[i] ){
-				err = 0;
-				err = canopen_pdo_send_2bytes(sock, nodes[i], CANOPEN_FC_PDO1_RX, 0x000F);
-				err = canopen_pdo_set_abs_position(sock, nodes[i], CANOPEN_FC_PDO2_RX, 0x003F, in[i]->getSignal().getValue());
-				lastPosValue[i] = in[i]->getSignal().getValue();
-				if(err < 0){
-					throw eeros::EEROSException("set of position over CAN failed");
-				}
+	for(int i = 0; i < in.size(); i++){
+		if( in[i]->getSignal().getValue() != lastPosValue[i] ){
+			err = 0;
+			err = canopen_pdo_send_2bytes(sock, nodes[i], CANOPEN_FC_PDO1_RX, 0x000F);
+			err = canopen_pdo_set_abs_position(sock, 0x05, CANOPEN_FC_PDO2_RX, 0x003F, in[i]->getSignal().getValue());
+			lastPosValue[i] = in[i]->getSignal().getValue();
+			if(err < 0){
+				throw eeros::EEROSException("set of position over CAN failed");
 			}
 		}
 	}
+	
+	
 }
 
 Input<int>* CanSendFaulhaber::getInput(int node) {
@@ -56,10 +56,3 @@ void CanSendFaulhaber::initiatePdoRequest(int node, uint8_t function_code)
 	pdoRequested.getSignal().setValue(true);
 }
 
-void CanSendFaulhaber::enable(){
-	enabled = true;
-}
-
-void CanSendFaulhaber::disable(){
-	enabled = false;
-}

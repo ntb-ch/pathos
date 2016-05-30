@@ -1,9 +1,7 @@
 #include "RadToPulses.hpp"
 #include "../constants.hpp"
 
-// using namespace eeros;
 using namespace eeros::control;
-// using namespace eeros::math;
 using namespace pathos::decoy;
 
 RadToPulses::RadToPulses(double enc_pulses, double i_gear) : encPulses(enc_pulses), gear(i_gear) { }

@@ -3,6 +3,7 @@
 #include "../control/ControlSystem_decoy.hpp"
 #include <unistd.h>
 #include <iostream>
+#include <canopen-faulhaber-drv.h>
 
 #include "../constants.hpp"
 
@@ -13,28 +14,39 @@ using namespace pathos::decoy;
 
 MainSequence_decoy::MainSequence_decoy(Sequencer* sequencer, ControlSystem_decoy* controlSys, SafetySystem* safetySys) :
 							Sequence<void>("main", sequencer), controlSys(controlSys), safetySys(safetySys),
-							homing(sequencer, controlSys, safetySys), armMotion(sequencer, controlSys, safetySys) {
+							homing_s(sequencer, controlSys, safetySys), armMotion_s(sequencer, controlSys, safetySys) {
 	// do something...
 }
 
 bool MainSequence_decoy::checkPreCondition() {
-	return true;
+	return safetySys->getCurrentLevel().getId() >= off;
 }
 
 void MainSequence_decoy::run() {
-	log.trace() << "[ Main Sequence Started ]";
+// 	log.info() << "[ Main Sequence Started ]"; // TODO understand why error
 	
-	controlSys->setPosRad.setValue(0.001);   // TODO, why needed?
+	safetySys->triggerEvent(doEnable);
 	
-	// 1. Wait for "operation enabled" 
-	while(safetySys->getCurrentLevel().getId() != motorsEnabled)
+	// 1. Wait for robot initialization + set motion parameters
+	while(safetySys->getCurrentLevel().getId() < homed){
+		if(isTerminating()) break;
 		usleep(10000);
-
-	// 2. Homing
-	homing();
+	}
+	auto pos_left  = controlSys->getActualPos_pulses(node_armLeft) ;
+	auto pos_right = controlSys->getActualPos_pulses(node_armRight);
+	std::cout << "main sequence homed: " << pos_left << "; " << pos_right << std::endl;
+	
+	while(safetySys->getCurrentLevel().getId() < ready){
+		if(isTerminating()) break;
+		usleep(10000);
+	}
+	
+	/*auto*/ pos_left  = controlSys->getActualPos_pulses(node_armLeft) ;
+	/*auto*/ pos_right = controlSys->getActualPos_pulses(node_armRight);
+	std::cout << "main sequence ready: " << pos_left << "; " << pos_right << std::endl;
 	
 	// 3. Perform motion
-	armMotion();
+// 	armMotion_s();
 
 }
 

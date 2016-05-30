@@ -8,18 +8,32 @@ using namespace eeros::control;
 using namespace pathos::decoy;
 
 ControlSystem_decoy::ControlSystem_decoy(int canSock, double ts) :
-	canSend(canSock, {node_armLeft, node_armRight}),
-	canReceive(canSock, {node_armLeft, node_armRight}, {CANOPEN_FC_PDO1_TX, CANOPEN_FC_PDO2_RX, CANOPEN_FC_PDO2_TX}),
-	setPosRad_toPulses(arm_encPulse, arm_i),
+	setPosRad_armLeft(0.0),
+	setPosRad_armRight(0.0),
+	socket(canSock),
+	canSend(canSock, {node_turning, node_swingBack, node_swingFront, node_armLeft, node_armRight}),
+	canReceive(canSock, {node_turning, node_swingBack, node_swingFront, node_armLeft, node_armRight}, {CANOPEN_FC_PDO1_TX, CANOPEN_FC_PDO2_RX, CANOPEN_FC_PDO2_TX}),
+	radToPulses_al(arm_encPulse, arm_i),
+	radToPulses_ar(arm_encPulse, arm_i),
 	timedomain("Main time domain", ts, true)
 {
-	setPosRad_toPulses.getIn().connect(setPosRad.getOut());
-	canSend.getInput(node_armRight)->connect(setPosRad_toPulses.getOut());       // I send you a position setpoint
-	canReceive.getPdoSignalIn().connect(canSend.getPdoSignalOut());              // I get in an encoder position ?? NO.. TODO
+	// Connect blocks
+	radToPulses_al.getIn().connect(setPosRad_armLeft.getOut());
+	radToPulses_ar.getIn().connect(setPosRad_armRight.getOut());
 	
+	canSend.getInput(node_armRight)->connect(radToPulses_ar.getOut()); // send a position setpoint
+	canSend.getInput(node_armLeft)->connect(radToPulses_al.getOut());  // send a position setpoint
+	
+	canReceive.getPdoSignalIn().connect(canSend.getPdoSignalOut());   
+	
+	// Add to timedomain
 	timedomain.addBlock(&canReceive);
-	timedomain.addBlock(&setPosRad);
-	timedomain.addBlock(&setPosRad_toPulses);
+	
+	timedomain.addBlock(&setPosRad_armLeft);
+	timedomain.addBlock(&setPosRad_armRight);
+	timedomain.addBlock(&radToPulses_al);
+	timedomain.addBlock(&radToPulses_ar);
+	
 	timedomain.addBlock(&canSend);
 	
 	eeros::task::Periodic td("control system",ts, timedomain);
@@ -31,12 +45,12 @@ ControlSystem_decoy::~ControlSystem_decoy(){
 	canSend.~CanSendFaulhaber();
 }
 
-int ControlSystem_decoy::getActualPos_pulses(){
+int ControlSystem_decoy::getActualPos_pulses(int node){
 	int16_t drvCtrl = 0;
 	int32_t encPos = 0;
 	
-	canSend.initiatePdoRequest(node_armRight, CANOPEN_FC_PDO2_TX);
-	if(canReceive.getPdoValue(node_armRight, CANOPEN_FC_PDO2_TX, &drvCtrl, &encPos)!=0){  
+	canSend.initiatePdoRequest(node, CANOPEN_FC_PDO2_TX);
+	if(canReceive.getPdoValue(node, CANOPEN_FC_PDO2_TX, &drvCtrl, &encPos)!=0){  
 		throw eeros::EEROSException("function code not found");
 	}
 	else{
@@ -44,12 +58,12 @@ int ControlSystem_decoy::getActualPos_pulses(){
 	}
 }
 
-double ControlSystem_decoy::getActualPos_rad(){
+double ControlSystem_decoy::getActualPos_rad(int node){
 	int16_t drvCtrl = 0;
 	int32_t encPos = 0;
 	
-	canSend.initiatePdoRequest(node_armRight, CANOPEN_FC_PDO2_TX);
-	if(canReceive.getPdoValue(node_armRight, CANOPEN_FC_PDO2_TX, &drvCtrl, &encPos)!=0){  
+	canSend.initiatePdoRequest(node, CANOPEN_FC_PDO2_TX);
+	if(canReceive.getPdoValue(node, CANOPEN_FC_PDO2_TX, &drvCtrl, &encPos)!=0){  
 		throw eeros::EEROSException("function code not found");
 	}
 	else{
@@ -62,17 +76,49 @@ bool ControlSystem_decoy::isOperationEnabled(){
 	int16_t drvCtrl = 0;
 	int32_t data = 0;
 	
-	canSend.initiatePdoRequest(node_armRight, CANOPEN_FC_PDO1_TX);                    
-	if(canReceive.getPdoValue(node_armRight, CANOPEN_FC_PDO1_TX, &drvCtrl, &data)!=0){  
-		throw eeros::EEROSException("function code not found");
-	}
-	else{
-		// Wait until drive is in "operation enabled" mode
-		if( (drvCtrl & oneBitMask) == operationEnabled ){
-			return true;
+	static bool allAxisEnabled = false;
+	static bool isEnabled[nofAxis];
+	for(int i=0;i<nofAxis;i++) isEnabled[i] = false;
+	
+	for(int i=0; i<nofAxis; i++){
+		canSend.initiatePdoRequest(nodes[i], CANOPEN_FC_PDO1_TX);                    
+		if(canReceive.getPdoValue(nodes[i], CANOPEN_FC_PDO1_TX, &drvCtrl, &data)!=0){  
+			throw eeros::EEROSException("function code not found");
 		}
-		else
-			return false;
+		else{
+			// Wait until drive is in "operation enabled" mode
+			if( (drvCtrl & oneBitMask) == operationEnabled ){
+				isEnabled[i] = true;
+			}
+			else {
+				isEnabled[i] = false;
+			}
+		}
+	}
+	
+	// Check if all axes are enabled
+	for(int i=1; i<nofAxis; i++){
+		allAxisEnabled = isEnabled[i] && isEnabled[i-1];
+	}
+	return allAxisEnabled;
+}
+
+int16_t ControlSystem_decoy::getDrivesStatus(){
+	int16_t drvCtrl = 0;
+	int32_t data = 0;
+	
+	static bool allAxisEnabled = false;
+	static bool isEnabled[nofAxis];
+	for(int i=0;i<nofAxis;i++) isEnabled[i] = false;
+	
+	for(int i=0; i<nofAxis; i++){
+		canSend.initiatePdoRequest(nodes[i], CANOPEN_FC_PDO1_TX);                    
+		if(canReceive.getPdoValue(nodes[i], CANOPEN_FC_PDO1_TX, &drvCtrl, &data)!=0){  
+			throw eeros::EEROSException("function code not found");
+		}
+		else{
+			return drvCtrl;
+		}
 	}
 }
 

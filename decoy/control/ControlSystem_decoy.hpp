@@ -18,19 +18,25 @@ namespace pathos {
 			ControlSystem_decoy(int canSock, double ts);
 			virtual ~ControlSystem_decoy();
 			
-			virtual double getActualPos_rad();
-			virtual int getActualPos_pulses();
+			virtual double getActualPos_rad(int node);
+			virtual int getActualPos_pulses(int node);
+			
 			virtual bool isOperationEnabled();
-		
+			virtual int16_t getDrivesStatus();
+			
 			eeros::control::CanSendFaulhaber canSend;
 			eeros::control::CanReceiveFaulhaber canReceive;
-			eeros::control::Constant<double> setPosRad;
-			pathos::decoy::RadToPulses setPosRad_toPulses;
+			eeros::control::Constant<double> setPosRad_armRight;
+			eeros::control::Constant<double> setPosRad_armLeft;
+			pathos::decoy::RadToPulses radToPulses_ar;
+			pathos::decoy::RadToPulses radToPulses_al;
 			
 			eeros::control::TimeDomain timedomain;
-		
+					
 		private:
-			// ...
+			int socket;
+	
+			
 		};
 	};
 };

@@ -21,9 +21,6 @@ namespace eeros {
 			virtual eeros::control::Input<bool>& getPdoSignalIn() {
 				return pdoRequested;
 			}
-			
-			virtual void enable();
-			virtual void disable();
 						
 			struct PdoUserData{
 				uint32_t nodeId;
@@ -37,8 +34,6 @@ namespace eeros {
 			int sock;
 			canopen_frame_t readFrame;
 			int readLen;
-			bool enabled = false;
-			
 		protected:
 			std::vector<eeros::control::Output<int>*> out;
 			std::vector<uint32_t> nodes;

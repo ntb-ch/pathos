@@ -21,15 +21,11 @@ namespace eeros {
 			virtual Output<bool>& getPdoSignalOut(){
 				return pdoRequested;
 			}
-			
-			virtual void enable();
-			virtual void disable();
 			  
 		private:
 			int sock;
 			int err;
 			std::vector<int> lastPosValue;
-			bool enabled = false;
 			
 		protected:
 			std::vector<eeros::control::Input<int>*> in;

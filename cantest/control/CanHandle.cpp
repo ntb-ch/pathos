@@ -26,9 +26,9 @@ CanHandle::CanHandle(std::string can_iface)
 		throw eeros::EEROSException("Error: Failed to bind can socket");
 		return;
 	}
-// 	int flags = fcntl(sock, F_GETFL, 0);
-// 	fcntl(sock, F_SETFL, flags | O_NONBLOCK);
-
+	int flags = fcntl(sock, F_GETFL, 0);
+	fcntl(sock, F_SETFL, flags | O_NONBLOCK);
+	
 	init_can_nodes(sock);
 }
 

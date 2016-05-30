@@ -21,41 +21,19 @@ void Homing::init() {
 }
 
 bool Homing::checkPreCondition() {
-	return true;
+	return (safetySys->getCurrentLevel().getId() == homing);
 }
 
 void Homing::run() {
 	log.info() << "[ Homing ] started";
 	
-	double encPos = controlSys->getActualPos_rad();
-	double targetPos = 0.0;
+	auto pos_left = controlSys->getActualPos_rad(node_armLeft);
+	auto pos_right = controlSys->getActualPos_rad(node_armRight);
 	
-	// Set ref position to actual position
-	controlSys->setPosRad.setValue(encPos);   
-	usleep(100000);
+	log.info() << pos_left << "; " << pos_right;
 	
-	double setPos = encPos;
-	while(controlSys->isOperationEnabled() && !isTerminating()){
-		if(fabs(setPos - targetPos) < 0.01){
-			break;
-		}
-		else if(setPos<targetPos){
-			controlSys->setPosRad.setValue(setPos);
-			setPos += 0.005;
-		}
-		else if(setPos>targetPos){
-			controlSys->setPosRad.setValue(setPos);
-			setPos -= 0.005;
-		}
-		usleep(10000);
-	}
-	
-	// Ref = enc --> TODO delete after solving probel of encoder not reaching setpoint
-	encPos = controlSys->getActualPos_rad();
-	controlSys->setPosRad.setValue(encPos);
-	usleep(100000);
-	std::cout << "setPoint: " << controlSys->setPosRad.getOut().getSignal().getValue() << "; encPos: " << encPos << std::endl;
-	
+// 	controlSys->homingMotors();
+
 }
 
 bool Homing::checkPostCondition() {

@@ -7,7 +7,8 @@ extern "C" {
 
 int init_can_nodes(int sock);
 int init_faulhaber_motor(int sock, int node);
-int homing_faulhaber_motor(int sock, int node);
+int homing_faulhaber_motor_actualPos(int sock, int node);
+int homing_faulhaber_motor_endSwitch(int sock, int node);
 int set_ramp_faulhaber(int sock, int node, int speed);
 int set_max_speed_faulhaber(int sock, int node, int speed);
 

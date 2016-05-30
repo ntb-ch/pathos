@@ -6,6 +6,9 @@
 #include <eeros/hal/ScalablePeripheralInput.hpp>
 #include <eeros/hal/FlinkWatchdog.hpp>
 
+#include <canopen-faulhaber-drv.h>
+#include "../constants.hpp"
+
 namespace pathos {
 	namespace decoy{
 		
@@ -14,23 +17,39 @@ namespace pathos {
 		// Define events
 		enum {
 			doOff = 1,
-			doEnable = 2,
+			doInitMotors = 2,
+			initMotorsDone = 3,
+			doDisable = 10,
+			doEnable = 11,
+			enablingDone = 12,
+			doHome = 15,
+			homingDone = 16,
+			setMotionParam = 17,
+			doReady = 20,
 		};
 		
 		// Define levels
 		enum {
 			off = 1,
-			motorsEnabled = 2,
+			initMotors = 2,
+			motorsEnabling = 3,
+			motorsEnabled = 4,
+			homing = 15,
+			homed = 16,
+			settingMotionParam = 17,
+			ready = 20,
 		};
 		
 		class SafetyProperties_decoy : public eeros::safety::SafetyProperties {
 
 			public:
-				SafetyProperties_decoy(ControlSystem_decoy* cs);
+				SafetyProperties_decoy(int canSock, ControlSystem_decoy* cs);
 				virtual ~SafetyProperties_decoy();
 			
 			private:
+				int socket;
 				ControlSystem_decoy* controlSys;
+	
 		};
 	};
 };

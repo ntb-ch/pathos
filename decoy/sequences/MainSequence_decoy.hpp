@@ -20,8 +20,8 @@ namespace pathos {
 			virtual void exit();
 			
 		private:
-			Homing homing;
-			ArmMotion armMotion;
+			Homing homing_s;
+			ArmMotion armMotion_s;
 			
 			bool isTerminating();
 			
