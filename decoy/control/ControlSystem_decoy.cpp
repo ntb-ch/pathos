@@ -55,6 +55,7 @@ int ControlSystem_decoy::getActualPos_pulses(int node){
 	}
 	else{
 		return encPos;
+		
 	}
 }
 
@@ -103,25 +104,75 @@ bool ControlSystem_decoy::isOperationEnabled(){
 	return allAxisEnabled;
 }
 
-int16_t ControlSystem_decoy::getDrivesStatus(){
+bool ControlSystem_decoy::isHomed(){ // TODO for all axes
 	int16_t drvCtrl = 0;
 	int32_t data = 0;
 	
-	static bool allAxisEnabled = false;
-	static bool isEnabled[nofAxis];
-	for(int i=0;i<nofAxis;i++) isEnabled[i] = false;
-	
-	for(int i=0; i<nofAxis; i++){
-		canSend.initiatePdoRequest(nodes[i], CANOPEN_FC_PDO1_TX);                    
-		if(canReceive.getPdoValue(nodes[i], CANOPEN_FC_PDO1_TX, &drvCtrl, &data)!=0){  
-			throw eeros::EEROSException("function code not found");
+	canSend.initiatePdoRequest(node_armLeft, CANOPEN_FC_PDO1_TX);  // get status word
+	if(canReceive.getPdoValue(node_armLeft, CANOPEN_FC_PDO1_TX, &drvCtrl, &data)!=0){  
+		throw eeros::EEROSException("function code not found");
 		}
-		else{
-			return drvCtrl;
+	else{
+		int16_t drv = drvCtrl;
+		int16_t bit = (1<<12);
+		int16_t res  = drvCtrl & (1<<12);
+		if((drvCtrl & bit12Mask)>0){
+// 			std::cout << "homed: " << drv << "; " << bit << "; " << res << "; " << oe_homingDone << std::endl;
+			return true;
+		}
+		else {
+// 			std::cout << "not homed: " << drv << "; " << bit << "; " << res << "; " << oe_homingDone << std::endl;
+			return false;
 		}
 	}
 }
 
+bool ControlSystem_decoy::isHomingError(){ // TODO for all axes
+	int16_t drvCtrl = 0;
+	int32_t data = 0;
+	
+	canSend.initiatePdoRequest(node_armLeft, CANOPEN_FC_PDO1_TX);  // get status word
+	if(canReceive.getPdoValue(node_armLeft, CANOPEN_FC_PDO1_TX, &drvCtrl, &data)!=0){  
+		throw eeros::EEROSException("function code not found");
+		}
+	else{		
+		int16_t drv = drvCtrl & oneBitMask;
+		int16_t bit = (1<<13);
+		int16_t res  = drv & (1<<13);
+		if((drvCtrl & bit13Mask)>0){
+// 			std::cout << "error: " << drv << "; " << bit << "; " << res << "; " << oe_homingError << std::endl;
+			return true;
+		}
+		else {
+// 			std::cout << "not error: " << drv << "; " << bit << "; " << res << "; " << oe_homingError << std::endl;
+			return false;
+		}
+	}
+}
+
+int16_t ControlSystem_decoy::getStatusWord(int node){
+	int16_t drvCtrl = 0;
+	int32_t data = 0;
+	
+	canSend.initiatePdoRequest(node, CANOPEN_FC_PDO1_TX);                    
+	if(canReceive.getPdoValue(node, CANOPEN_FC_PDO1_TX, &drvCtrl, &data)!=0){  
+			throw eeros::EEROSException("function code not found");
+		}
+	else
+// 		return (drvCtrl & oneBitMask);
+		return drvCtrl;
+}
+
+// CANOPEN_FC_PDO1_RX = control word 
 // CANOPEN_FC_PDO1_TX = get status word from motor
 // CANOPEN_FC_PDO2_RX = send data to motor (reference position)
 // CANOPEN_FC_PDO2_TX = get Data from motor
+
+
+// PDO1_RX (receive) controlword
+// PDO1_TX (send) statusword
+
+// PDO2_RX (receive) command
+// PDO2_TX (send) abfragedaten (??)
+
+

@@ -780,7 +780,7 @@ int send_nmt(int sock, int mode, int node)
     }
     else
     {
-        printf("DEBUG: Send NMT MC with CS=0x%.2X to Node=0x%.2X\n", cs, node);
+//         printf("DEBUG: Send NMT MC with CS=0x%.2X to Node=0x%.2X\n", cs, node);
         canopen_frame_set_nmt_mc(&canopen_frame, cs, node);
     }
 

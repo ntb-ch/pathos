@@ -22,7 +22,9 @@ namespace pathos {
 			virtual int getActualPos_pulses(int node);
 			
 			virtual bool isOperationEnabled();
-			virtual int16_t getDrivesStatus();
+			virtual bool isHomed();
+			virtual bool isHomingError();
+			virtual int16_t getStatusWord(int node);
 			
 			eeros::control::CanSendFaulhaber canSend;
 			eeros::control::CanReceiveFaulhaber canReceive;

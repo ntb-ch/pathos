@@ -17,15 +17,19 @@ extern "C" {
 	uint16_t switchModeOfOperation = 0x6060; 
 	uint32_t homingMode            = 0x0006;
 	uint32_t positionMode          = 0x0001;
-	uint32_t velocityMode          = 0x0003;
+	uint32_t speedMode             = 0x0003;
 	
-	uint16_t profileAcceleration = 0x6083;
-	uint16_t profileDeceleration = 0x6084;
-	uint16_t maxAllowedSpeed     = 0x607F;
+	uint32_t profileAcceleration = 0x6083;
+	uint32_t profileDeceleration = 0x6084;
+	uint32_t maxAllowedSpeed     = 0x607F;
+	uint32_t targetSpeed         = 0x60FF;
 	
-	uint16_t homingMethod = 0x6098;
-	uint16_t homingSpeed  = 0x6099;
-	uint16_t homingAcc    = 0x609A;
+	uint32_t setHomingMethod = 0x6098;
+	uint32_t setHomingSpeed  = 0x6099;
+	uint32_t setHomingAcc    = 0x609A;
+	
+	uint32_t setHomingSwitches = 0x2310;
+	uint32_t notifySwitch      = 0x2311;
 
 #ifdef __cplusplus
 }

@@ -27,26 +27,18 @@ void MainSequence_decoy::run() {
 	
 	safetySys->triggerEvent(doEnable);
 	
-	// 1. Wait for robot initialization + set motion parameters
-	while(safetySys->getCurrentLevel().getId() < homed){
-		if(isTerminating()) break;
-		usleep(10000);
-	}
-	auto pos_left  = controlSys->getActualPos_pulses(node_armLeft) ;
-	auto pos_right = controlSys->getActualPos_pulses(node_armRight);
-	std::cout << "main sequence homed: " << pos_left << "; " << pos_right << std::endl;
-	
+	// 1. Wait that robot is ready
 	while(safetySys->getCurrentLevel().getId() < ready){
 		if(isTerminating()) break;
 		usleep(10000);
 	}
 	
-	/*auto*/ pos_left  = controlSys->getActualPos_pulses(node_armLeft) ;
-	/*auto*/ pos_right = controlSys->getActualPos_pulses(node_armRight);
+	auto pos_left  = controlSys->getActualPos_pulses(node_armLeft) ;
+	auto pos_right = controlSys->getActualPos_pulses(node_armRight);
 	std::cout << "main sequence ready: " << pos_left << "; " << pos_right << std::endl;
 	
 	// 3. Perform motion
-// 	armMotion_s();
+	armMotion_s();
 
 }
 

@@ -31,34 +31,34 @@ void ArmMotion::run() {
 	double encPos_al = controlSys->getActualPos_rad(node_armLeft);
 	controlSys->setPosRad_armLeft.setValue(encPos_al);   
 	
-	double encPos_ar = controlSys->getActualPos_rad(node_armRight);
-	controlSys->setPosRad_armRight.setValue(encPos_ar);   
+// 	double encPos_ar = controlSys->getActualPos_rad(node_armRight);
+// 	controlSys->setPosRad_armRight.setValue(encPos_ar);   
 	
 	sleep(1);
 	double actualSetPoint_al = controlSys->setPosRad_armRight.getOut().getSignal().getValue();
-	double actualSetPoint_ar = controlSys->setPosRad_armLeft.getOut().getSignal().getValue();
+// 	double actualSetPoint_ar = controlSys->setPosRad_armLeft.getOut().getSignal().getValue();
 // 	std::cout << "after set " << actualSetPoint_al << "; " << actualSetPoint_ar << std::endl;
 	
-	double actPos_ar = encPos_ar;
+// 	double actPos_ar = encPos_ar;
 	double actPos_al = encPos_al;
 	bool positive_r = true;
 	bool positive_l = true;
 	
 	while(/*controlSys->isOperationEnabled() && */!isTerminating()){		
-		if( (actPos_ar <= 6.28) && positive_r){
-			controlSys->setPosRad_armRight.setValue(actPos_ar);
-			actPos_ar+=0.0628;
-		}
-		else{
-			positive_r = false;
-		}
-		if( (actPos_ar >= -6.28) && !positive_r){
-			controlSys->setPosRad_armRight.setValue(actPos_ar);
-			actPos_ar-=0.0628;
-		}
-		else{
-			positive_r = true;
-		}
+// 		if( (actPos_ar <= 6.28) && positive_r){
+// 			controlSys->setPosRad_armRight.setValue(actPos_ar);
+// 			actPos_ar+=0.0628;
+// 		}
+// 		else{
+// 			positive_r = false;
+// 		}
+// 		if( (actPos_ar >= -6.28) && !positive_r){
+// 			controlSys->setPosRad_armRight.setValue(actPos_ar);
+// 			actPos_ar-=0.0628;
+// 		}
+// 		else{
+// 			positive_r = true;
+// 		}
 		
 		if( (actPos_al <= 6.28) && positive_l){
 			controlSys->setPosRad_armLeft.setValue(actPos_al);

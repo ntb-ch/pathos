@@ -14,7 +14,7 @@
 #include <initializer_list>
 #include <cmath>
 
-#include "../initMotors.hpp"
+#include "../motorsFunctions.hpp"
 
 using namespace eeros;
 using namespace eeros::hal;
@@ -81,19 +81,47 @@ SafetyProperties_decoy::SafetyProperties_decoy(int canSock, ControlSystem_decoy*
 	});
 	
 	level(homing).setLevelAction([this](SafetyContext* privateContext) {
-		homing_motors_actualPos(socket);
-		homing_motors_endSwitch(socket);
-		privateContext->triggerEvent(homingDone);
+		static bool first = true;
+		static int count = 0;
+		
+		if(first){
+			homing_motors(socket);
+			first = false;
+		}
+		else {
+			if(count > 100){
+// 				controlSys->isHomed();
+// 				controlSys->isHomingError();
+				std::cout << controlSys->getStatusWord(node_armLeft) << std::endl;
+				count = 0;
+			}
+			else 
+				count++;
+// 			if(isHomingError(socket, node_armLeft)){
+// 				std::cout << "get status word: " << controlSys->getStatusWord(node_armLeft) << std::endl;
+// 				count = 0;
+// 			}
+// 			else
+// 				count++;
+		}
+			
+		// 0x1427 (5159 decimal)
+// 		privateContext->triggerEvent(homingDone);
 	});
 	
 	level(homed).setLevelAction([this](SafetyContext* privateContext) {
 		privateContext->triggerEvent(setMotionParam);
 	});
 	level(settingMotionParam).setLevelAction([this](SafetyContext* privateContext) {
-		set_motion_parameters(socket);
+		static bool first = true;
+		
+		if(first){
+			set_position_profile_mode(socket);
+			set_motion_parameters(socket);
+			first = false;
+		}
 		privateContext->triggerEvent(doReady);
 	});
-	
 	
 	// Define entry level
 	entryLevel = off;
