@@ -34,56 +34,42 @@ int main() {
 	StreamLogWriter w(std::cout);
 	Logger<LogWriter> log('M');
  
+	w.show();
+	
 	// Can handle
 	CanHandle* canHandle;
 	canHandle = new CanHandle("can0");
 	
 	// Start logger
-	Logger<LogWriter>::setDefaultWriter(&w);
-		
-// 	is_switch_active(canHandle->getSocket(), node_armLeft, );
-	
-	std::cout << "before control sys" << std::endl;
+	Logger<LogWriter>::setDefaultWriter(&w);	
 	
 	// Control system
 	ControlSystem_decoy* controlSystem;
 	controlSystem = new ControlSystem_decoy(canHandle->getSocket(), dt);
 	
-	std::cout << "after control sys" << std::endl;
-	
 	// Create safety system
 	SafetyProperties_decoy safetyProperties(canHandle->getSocket(), controlSystem);
 	SafetySystem safetySystem(safetyProperties, dt);
 	
-	std::cout << "after safety sys" << std::endl;
-
 	// Set executor & create safety system
 	auto &executor = Executor::instance();
 	executor.setPeriod(dt);
 	executor.setMainTask(safetySystem);
 	
-	std::cout << "after settings exe" << std::endl;
-
 	// Sequencer
 	Sequencer sequencer;
 	MainSequence_decoy mainSequence(&sequencer, controlSystem, &safetySystem);
 	sequencer.start(&mainSequence);
 	
-	std::cout << "after sequencer" << std::endl;
-
 	// Start control system
 	executor.run();
-	std::cout << "after exe run" << std::endl;
 
 	sequencer.shutdown();
 	sleep(3);
 	if(sequencer.getState()!=state::terminated) 
 		sequencer.abort();
 	
-	
-	
 	canHandle->~CanHandle();
-// 	log.info() << "Shuting down..."; // TODO not working
 	
 	return 0;
 

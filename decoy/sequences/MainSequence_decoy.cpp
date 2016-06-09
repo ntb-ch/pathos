@@ -14,7 +14,7 @@ using namespace pathos::decoy;
 
 MainSequence_decoy::MainSequence_decoy(Sequencer* sequencer, ControlSystem_decoy* controlSys, SafetySystem* safetySys) :
 							Sequence<void>("main", sequencer), controlSys(controlSys), safetySys(safetySys),
-							homing_s(sequencer, controlSys, safetySys), armMotion_s(sequencer, controlSys, safetySys) {
+							armMotion_s(sequencer, controlSys, safetySys) {
 	// do something...
 }
 
@@ -23,7 +23,7 @@ bool MainSequence_decoy::checkPreCondition() {
 }
 
 void MainSequence_decoy::run() {
-// 	log.info() << "[ Main Sequence Started ]"; // TODO understand why error
+	log.info() << "[ Main Sequence Started ]";
 	
 	safetySys->triggerEvent(doEnable);
 	
@@ -33,11 +33,7 @@ void MainSequence_decoy::run() {
 		usleep(10000);
 	}
 	
-	auto pos_left  = controlSys->getActualPos_pulses(node_armLeft) ;
-	auto pos_right = controlSys->getActualPos_pulses(node_armRight);
-	std::cout << "main sequence ready: " << pos_left << "; " << pos_right << std::endl;
-	
-	// 3. Perform motion
+	// 2. Perform motion
 	armMotion_s();
 
 }

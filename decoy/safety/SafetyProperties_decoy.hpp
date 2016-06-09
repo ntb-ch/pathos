@@ -22,10 +22,14 @@ namespace pathos {
 			doDisable = 10,
 			doEnable = 11,
 			enablingDone = 12,
-			doHome = 15,
-			homingDone = 16,
-			setMotionParam = 17,
-			doReady = 20,
+			doHome = 14,
+			homingDone1 = 15,
+			homingDone2 = 16,
+			homingDone3 = 17,
+			homingDone4 = 18,
+			homingDone5 = 19,
+			setMotionParam = 20,
+			doReady = 30,
 		};
 		
 		// Define levels
@@ -34,10 +38,14 @@ namespace pathos {
 			initMotors = 2,
 			motorsEnabling = 3,
 			motorsEnabled = 4,
-			homing = 15,
-			homed = 16,
-			settingMotionParam = 17,
-			ready = 20,
+			homing1 = 15,
+			homing2 = 16,
+			homing3 = 17,
+			homing4 = 18,
+			homing5 = 19,
+			homed = 20,
+			settingMotionParam = 21,
+			ready = 30,
 		};
 		
 		class SafetyProperties_decoy : public eeros::safety::SafetyProperties {

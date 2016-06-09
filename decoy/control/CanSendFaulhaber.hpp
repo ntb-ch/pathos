@@ -18,6 +18,7 @@ namespace eeros {
 			virtual void run();
 			eeros::control::Input<int>* getInput(int node);
 			virtual void initiatePdoRequest(int node, uint8_t function_code);
+			virtual void sendPdo(int node, uint8_t function_code, uint32_t userData);
 			virtual Output<bool>& getPdoSignalOut(){
 				return pdoRequested;
 			}
@@ -30,6 +31,7 @@ namespace eeros {
 			int err;
 			std::vector<int> lastPosValue;
 			bool enabled = false;
+			int stateCnt = 0;
 			
 		protected:
 			std::vector<eeros::control::Input<int>*> in;

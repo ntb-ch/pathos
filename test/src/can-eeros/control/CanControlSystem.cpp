@@ -31,11 +31,11 @@ CanControlSystem::~CanControlSystem(){
 }
 
 void CanControlSystem::start() {
-	timedomain.start();
+// 	timedomain.start();
 }
 
 void CanControlSystem::stop() {
-	timedomain.stop();
-	timedomain.join();
+// 	timedomain.stop();
+// 	timedomain.join();
 }
 

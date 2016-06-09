@@ -1,6 +1,7 @@
 #include "../include/canopen-faulhaber-drv.h"
 #include "../include/canopen-com.h"
 #include "../include/can-constants.h"
+#include <stdio.h>
 
 int init_can_nodes(int sock){
 	
@@ -12,10 +13,11 @@ int init_can_nodes(int sock){
 int init_faulhaber_motor(int sock, int node)
 {
 	int err = 0;
-
-	/*if((err = canopen_sdo_download_exp(sock, node, controlWord, 0, 0x000E,          2)) != 0) {   // Decoy BA
-		return err-10;                                                                        
-	}*/                                                                                         
+      
+	//TODO
+// 	if((err = canopen_sdo_download_exp(sock, node, controlWord, 0, 0x0008,        2)) != 0) {        
+// 		return err-20;                                                                        
+// 	}
 	if((err = canopen_sdo_download_exp(sock, node, controlWord, 0, shutDown,        2)) != 0) {        
 		return err-20;                                                                        
 	}                                                                                         
@@ -51,19 +53,16 @@ int homing_faulhaber_motor(int sock, int node, int homingMethod)
 	int err = 0;
 	
 	// Change to homing mode
-// 	if((err = canopen_sdo_download_exp(sock, node, switchModeOfOperation, 0, homingMode, 0)) != 0){
 	if((err = canopen_sdo_download_exp(sock, node, switchModeOfOperation, 0, homingMode, 1)) != 0){
 		return err;
 	}
 	
 	// Set homing method
-// 	if((err = canopen_sdo_download_exp(sock, node, setHomingMethod, 0, homingMethod, 2)) != 0){       
 	if((err = canopen_sdo_download_exp(sock, node, setHomingMethod, 0, homingMethod, 1)) != 0){       
 		return err;
 	}
 	
 	// Start reference path
-// 	if((err = canopen_sdo_download_exp(sock, node, controlWord, 0, enOp_startHoming, 0)) != 0){ 
 	if((err = canopen_sdo_download_exp(sock, node, controlWord, 0, enOp_startHoming, 2)) != 0){ 
 		return err;
 	}
@@ -76,26 +75,19 @@ int homing_faulhaber_motor(int sock, int node, int homingMethod)
 	return 0;
 }
 
-// int is_switch_active(int sock, int node, int switchId){
-// 	
-// 	int err = 0;
-// 	uint32_t data;
-// 	
-// 	if((err = canopen_sdo_upload_exp(sock, node, 0x2311, 1, &data)) != 0){ 
-// 		return err;
-// 	}
-// 	printf(data);
-// 	
-// 	return 0;
-// }
-
 int set_position_profile_mode_faulhaber(int sock, int node)
 {
 	int err = 0;
+	uint32_t data;
 	
 	if((err = canopen_sdo_download_exp(sock, node, switchModeOfOperation, 0, positionMode, 1)) != 0){
 		return err;
 	}
+	
+	if((err = canopen_sdo_upload_exp(sock, node, 0x6061, 0, &data)) != 0){
+		return err;
+	}
+	printf("mode: %d\n", data);
 	
 	return 0;
 }
@@ -140,10 +132,6 @@ int set_max_speed_faulhaber(int sock, int node, int speed)    // speed in rpm
 {
 	int err = 0;
 	
-	// Change to speed mode
-	if((err = canopen_sdo_download_exp(sock, node, switchModeOfOperation, 0, speedMode, 1)) != 0){
-		return err;
-	}
 	// Set max velocity
 	if((err = canopen_sdo_download_exp(sock, node, maxAllowedSpeed, 0, speed, 0)) != 0){
 		return err;

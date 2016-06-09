@@ -4,7 +4,6 @@
 #include <eeros/sequencer/Sequence.hpp>
 #include <eeros/safety/SafetySystem.hpp>
 #include "../control/ControlSystem_decoy.hpp"
-#include "Homing.hpp"
 #include "ArmMotion.hpp"
 
 namespace pathos {
@@ -20,7 +19,6 @@ namespace pathos {
 			virtual void exit();
 			
 		private:
-			Homing homing_s;
 			ArmMotion armMotion_s;
 			
 			bool isTerminating();

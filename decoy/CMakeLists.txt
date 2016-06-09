@@ -25,7 +25,6 @@ add_executable(decoy main_decoy.cpp
 			safety/SafetyProperties_decoy.cpp
 			
 			sequences/ArmMotion.cpp
-			sequences/Homing.cpp
 			sequences/MainSequence_decoy.cpp
 		)
 

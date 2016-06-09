@@ -22,28 +22,40 @@ namespace eeros {
 				return pdoRequested;
 			}
 			
+			virtual Output<uint8_t>& getFcOut(uint32_t node);
+			virtual Output<uint16_t>& getdrvCtrlOut(uint32_t node);
+			virtual Output<int32_t>& getUserDataOut(uint32_t node);
+			virtual Output<bool> getOpEnabledOut();
+			
 			virtual void enable();
 			virtual void disable();
 						
 			struct PdoUserData{
-				uint32_t nodeId;
-				int16_t drvCtrl;
+				uint8_t functionCode;
+				uint16_t drvCtrl;
 				int32_t userData;
 			};
 						
-			int getPdoValue(int32_t node, uint8_t functionCode, int16_t* drvCtrl, int32_t* userData) ;
+// 			int getPdoValue(uint32_t node, uint8_t functionCode, uint16_t* drvCtrl, uint32_t* userData) ;
 
 		private:
 			int sock;
 			canopen_frame_t readFrame;
 			int readLen;
-			bool enabled = false;
+			bool allAxisEnabled = false;
+			int debCnt = 0;
+			std::vector<bool> axisEnabled;
+			std::map<uint32_t, PdoUserData>::iterator mIt;
 			
 		protected:
-			std::vector<eeros::control::Output<int>*> out;
+			std::vector<eeros::control::Output<uint8_t>*> fcOut;
+			std::vector<eeros::control::Output<uint16_t>*> drvCtrlOut;
+			std::vector<eeros::control::Output<int32_t>*> userDataOut;
+			eeros::control::Output<bool> isEnabled;
 			std::vector<uint32_t> nodes;
 			std::vector<uint8_t> functionCodes;
-			std::map<uint8_t, PdoUserData> pdoData;
+// 			std::map<uint8_t, PdoUserData> pdoData;
+			std::vector<std::map<uint32_t, PdoUserData>> nodePdoData;
 			eeros::control::Input<bool> pdoRequested;
 		};
 	};
