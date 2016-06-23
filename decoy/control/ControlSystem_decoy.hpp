@@ -37,6 +37,9 @@ namespace pathos {
 // 			pathos::decoy::RadToPulses radToPulses_node5;
 			
 			
+			eeros::control::Constant<int> setPosPulses_node1;
+			eeros::control::Constant<int> setPosPulses_node2;
+			eeros::control::Constant<int> setPosPulses_node3;
 			eeros::control::Constant<int> setPosPulses_node4;
 			eeros::control::Constant<int> setPosPulses_node5;
 			

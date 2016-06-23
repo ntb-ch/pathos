@@ -8,14 +8,15 @@ using namespace eeros::control;
 using namespace pathos::decoy;
 
 ControlSystem_decoy::ControlSystem_decoy(int canSock, double ts) :
+	setPosPulses_node1(0.0),
+	setPosPulses_node2(0.0),
+	setPosPulses_node3(0.0),
 	setPosPulses_node4(0.0),
 	setPosPulses_node5(0.0),
 	
 	socket(canSock),
-// 	canSend(canSock, {node1, node2, node3, node4, node5}),
-	canSend(canSock, {node4, node5}),
-// 	canReceive(canSock, {node1, node2, node3, node4, node5}, {CANOPEN_FC_PDO1_TX, CANOPEN_FC_PDO2_RX, CANOPEN_FC_PDO2_TX}),
-	canReceive(canSock, {node4, node5}, {0x03, 0x05, 0x06}),
+	canSend(canSock, {node1, node2, node3, node4, node5}),
+	canReceive(canSock, {node1, node2, node3, node4, node5}, {CANOPEN_FC_PDO1_TX, CANOPEN_FC_PDO2_RX, CANOPEN_FC_PDO2_TX}),
 	
 	timedomain("Main time domain", ts, true)
 {
@@ -26,6 +27,9 @@ ControlSystem_decoy::ControlSystem_decoy(int canSock, double ts) :
 // 	canSend.getInput(node4)->connect(radToPulses_node4.getOut());  // send a position setpoint
 // 	canSend.getInput(node5)->connect(radToPulses_node5.getOut());  // send a position setpoint
 	
+	canSend.getInput(node1)->connect(setPosPulses_node1.getOut());  // send a position setpoint
+	canSend.getInput(node2)->connect(setPosPulses_node2.getOut());  // send a position setpoint
+	canSend.getInput(node3)->connect(setPosPulses_node3.getOut());  // send a position setpoint
 	canSend.getInput(node4)->connect(setPosPulses_node4.getOut());  // send a position setpoint
 	canSend.getInput(node5)->connect(setPosPulses_node5.getOut());  // send a position setpoint
 	
@@ -35,13 +39,11 @@ ControlSystem_decoy::ControlSystem_decoy(int canSock, double ts) :
 	// Add to timedomain
 	timedomain.addBlock(&canReceive);
 	
+	timedomain.addBlock(&setPosPulses_node1);
+	timedomain.addBlock(&setPosPulses_node2);
+	timedomain.addBlock(&setPosPulses_node3);
 	timedomain.addBlock(&setPosPulses_node4);
 	timedomain.addBlock(&setPosPulses_node5);
-	
-// 	timedomain.addBlock(&setPosRad_node4);
-// 	timedomain.addBlock(&setPosRad_node5);
-// 	timedomain.addBlock(&radToPulses_node4);
-// 	timedomain.addBlock(&radToPulses_node5);
 	
 	timedomain.addBlock(&canSend);
 	
@@ -75,7 +77,17 @@ double ControlSystem_decoy::getActualPos_rad(int node){
 	uint32_t encPos = 0;
 	
 	getActualPos_pulses(node);
-	double out = encPos * (2.0*pi) / arm_encPulse / arm_i;
+	
+	int gear = 0;
+	if(node==1)
+		gear = turn_i * turn_i2;
+	else if(node==2 || node==3)
+		gear = swing_i;
+	else
+		gear = arm_i;
+	
+	
+	double out = encPos * (2.0*pi) / arm_encPulse / gear;
 	return out;
 }
 

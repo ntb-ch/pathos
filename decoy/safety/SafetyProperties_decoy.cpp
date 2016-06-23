@@ -46,8 +46,7 @@ SafetyProperties_decoy::SafetyProperties_decoy(int canSock, ControlSystem_decoy*
 	level(initMotors         ).addEvent(initMotorsDone, motorsEnabling,     kPrivateEvent );
 	level(motorsEnabling     ).addEvent(enablingDone,   motorsEnabled,      kPrivateEvent );
 	level(motorsEnabled      ).addEvent(doDisable,      off,                kPrivateEvent );
-// 	level(motorsEnabled      ).addEvent(doHome,         homing1,            kPrivateEvent );
-	level(motorsEnabled      ).addEvent(doHome,         homing4,            kPrivateEvent );
+	level(motorsEnabled      ).addEvent(doHome,         homing1,            kPrivateEvent );
 	level(homing1            ).addEvent(homingDone1,    homing2,            kPublicEvent  );
 	level(homing2            ).addEvent(homingDone2,    homing3,            kPublicEvent  );
 	level(homing3            ).addEvent(homingDone3,    homing4,            kPublicEvent  );
@@ -90,55 +89,54 @@ SafetyProperties_decoy::SafetyProperties_decoy(int canSock, ControlSystem_decoy*
 		privateContext->triggerEvent(doHome);
 	});
 	
-// 	TODO KALA
-// 	level(homing1).setLevelAction([this](SafetyContext* privateContext) {
-// 		static bool first = true;
-// 		static int count = 0;
-// 		
-// 		if(first){
-// 			homing_motor(socket, node1, homingMtd[0]);
-// 			first = false;
-// 		}
-// 		count++;
-// 		
-// 		if(controlSys->isHomed(node1) && count > 100){
-// 			privateContext->triggerEvent(homingDone1);
-// 		}
-// 	});
-// 	level(homing2).setLevelAction([this](SafetyContext* privateContext) {
-// 		static bool first = true;
-// 		static int count = 0;
-// 		
-// 		if(first){
-// 			homing_motor(socket, node2, homingMtd[1]);
-// 			first = false;
-// 		}
-// 		count++;
-// 		
-// 		if(controlSys->isHomed(node2) && count > 100){
-// 			privateContext->triggerEvent(homingDone2);
-// 		}
-// 	});
-// 	level(homing3).setLevelAction([this](SafetyContext* privateContext) {
-// 		static bool first = true;
-// 		static int count = 0;
-// 		
-// 		if(first){
-// 			homing_motor(socket, node3, homingMtd[2]);
-// 			first = false;
-// 		}
-// 		count++;
-// 		
-// 		if(controlSys->isHomed(node3) && count > 100){
-// 			privateContext->triggerEvent(homingDone3);
-// 		}
-// 	});
+	level(homing1).setLevelAction([this](SafetyContext* privateContext) {
+		static bool first = true;
+		static int count = 0;
+		
+		if(first){
+			homing_motor(socket, node1, homingMtd[0]);
+			first = false;
+		}
+		count++;
+		
+		if(controlSys->isHomed(node1) && count > 100){
+			privateContext->triggerEvent(homingDone1);
+		}
+	});
+	level(homing2).setLevelAction([this](SafetyContext* privateContext) {
+		static bool first = true;
+		static int count = 0;
+		
+		if(first){
+			homing_motor(socket, node2, homingMtd[1]);
+			first = false;
+		}
+		count++;
+		
+		if(controlSys->isHomed(node2) && count > 100){
+			privateContext->triggerEvent(homingDone2);
+		}
+	});
+	level(homing3).setLevelAction([this](SafetyContext* privateContext) {
+		static bool first = true;
+		static int count = 0;
+		
+		if(first){
+			homing_motor(socket, node3, homingMtd[2]);
+			first = false;
+		}
+		count++;
+		
+		if(controlSys->isHomed(node3) && count > 100){
+			privateContext->triggerEvent(homingDone3);
+		}
+	});
 	level(homing4).setLevelAction([this](SafetyContext* privateContext) {
 		static bool first = true;
 		static int count = 0;
 		
 		if(first){
-			homing_motor(socket, node4, homingMtd[3]);
+			homing_motor(socket, node4, homingMtd[0]); // homingMtd[3]);
 			first = false;
 		}
 		count++;
@@ -153,7 +151,7 @@ SafetyProperties_decoy::SafetyProperties_decoy(int canSock, ControlSystem_decoy*
 		static int count = 0;
 		
 		if(first){
-			homing_motor(socket, node5, homingMtd[4]);
+			homing_motor(socket, node5, homingMtd[0]); // homingMtd[4]);
 			first = false;
 		}
 		count++;
@@ -164,14 +162,13 @@ SafetyProperties_decoy::SafetyProperties_decoy(int canSock, ControlSystem_decoy*
 	});
 	
 	level(homed).setLevelAction([this](SafetyContext* privateContext) {
-// 		auto n1 = controlSys->getActualPos_pulses(node1);
-// 		auto n2 = controlSys->getActualPos_pulses(node2);
-// 		auto n3 = controlSys->getActualPos_pulses(node3);
+		auto n1 = controlSys->getActualPos_pulses(node1);
+		auto n2 = controlSys->getActualPos_pulses(node2);
+		auto n3 = controlSys->getActualPos_pulses(node3);
 		auto n4 = controlSys->getActualPos_pulses(node4);
 		auto n5 = controlSys->getActualPos_pulses(node5);
 		
-// 		std::cout << n1 << "; " << n2 << "; " << n3 << "; " << n4 << "; " << n5 << std::endl;
-		std::cout << n4 << "; " << n5 << std::endl;
+		std::cout << n1 << "; " << n2 << "; " << n3 << "; " << n4 << "; " << n5 << std::endl;
 		
 		privateContext->triggerEvent(setMotionParam);
 	});
@@ -185,29 +182,25 @@ SafetyProperties_decoy::SafetyProperties_decoy(int canSock, ControlSystem_decoy*
 			
 			double encPos_al = controlSys->getActualPos_rad(node4);
 			double encPos_ar = controlSys->getActualPos_rad(node5);
-// 			controlSys->setPosRad_node4.setValue(encPos_al);    // TODO
-// 			controlSys->setPosRad_node5.setValue(encPos_ar);    // TODO
 			
 			first = false;
 		}
 		
 		// Do ready if drives in operation enabled (bits 10 and 12 resetted)
 		if(controlSys->canReceive.getOpEnabledOut().getSignal().getValue()){
-// 		if(controlSys->isOperationEnabled())
+// 		if(controlSys->isOperationEnabled()) // TODO leave or change?
 			int j = 0;
 			for( j = 0; j < sizeof(nodes)/sizeof(nodes[0]); j++){
 					
 				if(!controlSys->setPointReceived(nodes[j])){
-					auto n4x = controlSys->getActualPos_pulses(nodes[j]);
 					privateContext->triggerEvent(doReady);
+					std::cout << "byebye" << std::endl;
 				}
-				else{
-					controlSys->canSend.sendPdo(nodes[j], CANOPEN_FC_PDO1_RX, 0x000F);
-				}
-			}
-				
+// 				else{ // TODO FAILED to initiate PDO request !!! ???
+// 					controlSys->canSend.sendPdo(nodes[j], CANOPEN_FC_PDO1_RX, 0x000F);
+// 				}
+			} 
 		}
-			
 	});
 	
 // 	level(ready).setLevelAction([this](SafetyContext* privateContext) {
