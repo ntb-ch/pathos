@@ -87,7 +87,7 @@ int set_position_profile_mode_faulhaber(int sock, int node)
 	if((err = canopen_sdo_upload_exp(sock, node, 0x6061, 0, &data)) != 0){
 		return err;
 	}
-	printf("mode: %d\n", data);
+// 	printf("mode: %d\n", data);
 	
 	return 0;
 }

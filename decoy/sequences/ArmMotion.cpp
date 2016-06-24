@@ -41,77 +41,77 @@ void ArmMotion::run() {
 	int cnt = 0;
 	
 	while(!isTerminating()){
-		// node1
-		if( (actPos1 <= 10000) && positive1){
-			controlSys->setPosPulses_node1.setValue(actPos1);
-			actPos1+=100;
-		}
-		else{
-			positive1 = false;
-		}
-		if( (actPos1 >= -10000) && !positive1){
-			controlSys->setPosPulses_node1.setValue(actPos1);
-			actPos1-=100;
-		}
-		else{
-			positive1 = true;
-		}
-		// node2
-		if( (actPos2 <= 5000) && positive2){
-			controlSys->setPosPulses_node2.setValue(actPos2);
-			actPos2+=100;
-		}
-		else{
-			positive2 = false;
-		}
-		if( (actPos2 >= -5000) && !positive2){
-			controlSys->setPosPulses_node2.setValue(actPos2);
-			actPos2-=100;
-		}
-		else{
-			positive2 = true;
-		}
-		// node3
-		if( (actPos3 <= 5000) && positive3){
-			controlSys->setPosPulses_node3.setValue(actPos3);
-			actPos3+=100;
-		}
-		else{
-			positive3 = false;
-		}
-		if( (actPos3 >= -5000) && !positive3){
-			controlSys->setPosPulses_node3.setValue(actPos3);
-			actPos3-=100;
-		}
-		else{
-			positive3 = true;
-		}
+// 		// node1
+// 		if( (actPos1 <= 10000) && positive1){
+// 			controlSys->setPosPulses_node1.setValue(actPos1);
+// 			actPos1+=100;
+// 		}
+// 		else{
+// 			positive1 = false;
+// 		}
+// 		if( (actPos1 >= -10000) && !positive1){
+// 			controlSys->setPosPulses_node1.setValue(actPos1);
+// 			actPos1-=100;
+// 		}
+// 		else{
+// 			positive1 = true;
+// 		}
+// 		// node2
+// 		if( (actPos2 <= 10000) && positive2){
+// 			controlSys->setPosPulses_node2.setValue(actPos2);
+// 			actPos2+=100;
+// 		}
+// 		else{
+// 			positive2 = false;
+// 		}
+// 		if( (actPos2 >= -10000) && !positive2){
+// 			controlSys->setPosPulses_node2.setValue(actPos2);
+// 			actPos2-=100;
+// 		}
+// 		else{
+// 			positive2 = true;
+// 		}
+// 		// node3
+// 		if( (actPos3 <= 10000) && positive3){
+// 			controlSys->setPosPulses_node3.setValue(actPos3);
+// 			actPos3+=100;
+// 		}
+// 		else{
+// 			positive3 = false;
+// 		}
+// 		if( (actPos3 >= -10000) && !positive3){
+// 			controlSys->setPosPulses_node3.setValue(actPos3);
+// 			actPos3-=100;
+// 		}
+// 		else{
+// 			positive3 = true;
+// 		}
 		// node 4
-		if( (actPos4 <= 40000/*6.28*/) && positive4){
+		if( (actPos4 <= 7000) && positive4){
 			controlSys->setPosPulses_node4.setValue(actPos4);
-			actPos4+=400;
+			actPos4+=70;
 		}
 		else{
 			positive4 = false;
 		}
-		if( (actPos4 >= -40000) && !positive4){
+		if( (actPos4 >= -7000) && !positive4){
 			controlSys->setPosPulses_node4.setValue(actPos4);
-			actPos4-=400;
+			actPos4-=70;
 		}
 		else{
 			positive4 = true;
 		}
 		// node 5
-		if( (actPos5 <= 20000/*6.28*/) && positive5){
+		if( (actPos5 <= 7000) && positive5){
 			controlSys->setPosPulses_node5.setValue(actPos5);
-			actPos5+=400;
+			actPos5+=70;
 		}
 		else{
 			positive5 = false;
 		}
-		if( (actPos5 >= -20000) && !positive5){
+		if( (actPos5 >= -7000) && !positive5){
 			controlSys->setPosPulses_node5.setValue(actPos5);
-			actPos5-=400;
+			actPos5-=70;
 		}
 		else{
 			positive5 = true;

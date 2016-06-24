@@ -136,7 +136,7 @@ SafetyProperties_decoy::SafetyProperties_decoy(int canSock, ControlSystem_decoy*
 		static int count = 0;
 		
 		if(first){
-			homing_motor(socket, node4, homingMtd[0]); // homingMtd[3]);
+			homing_motor(socket, node4, homingMtd[3]); 
 			first = false;
 		}
 		count++;
@@ -151,7 +151,7 @@ SafetyProperties_decoy::SafetyProperties_decoy(int canSock, ControlSystem_decoy*
 		static int count = 0;
 		
 		if(first){
-			homing_motor(socket, node5, homingMtd[0]); // homingMtd[4]);
+			homing_motor(socket, node5, homingMtd[4]); 
 			first = false;
 		}
 		count++;

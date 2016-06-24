@@ -12,23 +12,19 @@ namespace pathos {
 		static constexpr double g = 9.80665;         // gravity acc [m/s²]
 		
 		static constexpr double dt = 0.010;          // sample time
-// 		static constexpr int nofAxis = 5;
-//TODO KALA
-		static constexpr int nofAxis = 2;
+		static constexpr int nofAxis = 5;
 		
 		// *** Can *** //
 // 		TODO KALA
-// 		static constexpr int node1 = 0x01;           // node_turning
-// 		static constexpr int node2 = 0x02;           // node_swingBack
-// 		static constexpr int node3 = 0x03;           // node_swingFront
+		static constexpr int node1 = 0x01;           // node_turning
+		static constexpr int node2 = 0x02;           // node_swingBack
+		static constexpr int node3 = 0x03;           // node_swingFront
 		static constexpr int node4 = 0x04;           // node_armLeft
 		static constexpr int node5 = 0x05;           // node_armLeft
 		
-// 		static constexpr int nodes[nofAxis] = {node_turning, node_swingBack, node_swingFront, node_armLeft, node_armRight};
-		static constexpr int nodes[nofAxis] = {/*node1, node2, node3,*/ node4, node5};
+		static constexpr int nodes[nofAxis] = {node1, node2, node3, node4, node5};
 		
-// 		static constexpr int homingMtd[nofAxis] = {35, 35, 35, 20, 21}; TODO
-		static constexpr int homingMtd[nofAxis] = {20, 21};
+		static constexpr int homingMtd[nofAxis] = {35, 35, 35, 20, 21};
 		
 		static constexpr uint16_t statusWord    = 0x6041;
 		
@@ -58,7 +54,7 @@ namespace pathos {
 		// Swing
 		static constexpr int swing_homingSpeed = 50;
 		static constexpr int swing_maxSpeed = 2500;
-		static constexpr int swing_i = 14;
+		static constexpr int swing_i = 14.0;
 		static constexpr int swing_encPulse = 3000;    // pulses/turn
 		
 		// Arms
