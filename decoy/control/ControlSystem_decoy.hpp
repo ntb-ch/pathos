@@ -21,8 +21,6 @@ namespace pathos {
 			virtual double getActualPos_rad(int node);
 			virtual int getActualPos_pulses(int node);
 			
-// 			virtual bool isOperationEnabled();
-			
 			virtual bool isHomed(int node);
 			virtual bool isHomingError(int node);
 			virtual bool setPointReceived(int node);
@@ -31,11 +29,6 @@ namespace pathos {
 			
 			eeros::control::CanSendFaulhaber canSend;
 			eeros::control::CanReceiveFaulhaber canReceive;
-// 			eeros::control::Constant<double> setPosRad_node4;
-// 			eeros::control::Constant<double> setPosRad_node5;
-// 			pathos::decoy::RadToPulses radToPulses_node4;
-// 			pathos::decoy::RadToPulses radToPulses_node5;
-			
 			
 			eeros::control::Constant<int> setPosPulses_node1;
 			eeros::control::Constant<int> setPosPulses_node2;

@@ -27,7 +27,7 @@ SafetyProperties_decoy::SafetyProperties_decoy(int canSock, ControlSystem_decoy*
 	
 	// Define Levels
 	levels = {
-		{ off,               "System off",                },
+		{off,                "System off",                },
 		{initMotors,         "Init motors",               },
 		{motorsEnabling,     "Enabling motors",           },
 		{motorsEnabled,      "Motors enabled",            },
@@ -70,7 +70,6 @@ SafetyProperties_decoy::SafetyProperties_decoy(int canSock, ControlSystem_decoy*
 		static int timeout = 0;
 		
 		if(first == true && count > 200 ) {
-// 			if(controlSys->isOperationEnabled()){
 			if(controlSys->canReceive.getOpEnabledOut().getSignal().getValue()){
 				first = false;
 				privateContext->triggerEvent(enablingDone);
@@ -186,39 +185,10 @@ SafetyProperties_decoy::SafetyProperties_decoy(int canSock, ControlSystem_decoy*
 			first = false;
 		}
 		
-		// Do ready if drives in operation enabled (bits 10 and 12 resetted)
 		if(controlSys->canReceive.getOpEnabledOut().getSignal().getValue()){
-// 		if(controlSys->isOperationEnabled()) // TODO leave or change?
-			int j = 0;
-			for( j = 0; j < sizeof(nodes)/sizeof(nodes[0]); j++){
-					
-				if(!controlSys->setPointReceived(nodes[j])){
-					privateContext->triggerEvent(doReady);
-					std::cout << "byebye" << std::endl;
-				}
-// 				else{ // TODO FAILED to initiate PDO request !!! ???
-// 					controlSys->canSend.sendPdo(nodes[j], CANOPEN_FC_PDO1_RX, 0x000F);
-// 				}
-			} 
+			privateContext->triggerEvent(doReady);
 		}
 	});
-	
-// 	level(ready).setLevelAction([this](SafetyContext* privateContext) {
-// 		static int count = 0;
-// 		int statusWords[5];
-// 		
-// 		if(count > 100){
-// 			for (int j=0;j<5;j++)
-// 				statusWords[j] = controlSys->getStatusWord(nodes[j]);
-// 			count = 0;
-// 			std::cout << "sw: " << statusWords[0] << "; " << 
-// 			                       statusWords[1] << "; " << 
-// 			                       statusWords[2] << "; " << 
-// 			                       statusWords[3] << "; " << 
-// 			                       statusWords[4] << "; " << std::endl;
-// 		}
-// 		else count++;
-// 	});
 	
 	// Define entry level
 	entryLevel = off;

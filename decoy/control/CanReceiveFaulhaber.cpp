@@ -43,7 +43,7 @@ CanReceiveFaulhaber::~CanReceiveFaulhaber(){
 
 void CanReceiveFaulhaber::run()
 {
-	if(allAxisEnabled){
+	if(enabled){
 // 		debCnt++;
 // 		if(debCnt > 200){
 // 			for(int j = 0; j < nodePdoData.size(); j++){
@@ -110,20 +110,26 @@ void CanReceiveFaulhaber::run()
 							pdoRequested.getSignal().setValue(false);
 							fcOut[i]->getSignal().setValue(readFrame.function_code);
 							
-							
+							// TEST
 							if( (tmpDrvCtrl & 0x002F) == 0x0027){	//check if operation is enabled
-// 								axisEnabled[i] = true;
-// 								for(int k = 0; k < nodes.size(); k++){
-// 									allAxisEnabled = axisEnabled[i] && axisEnabled[i-1];
-// 								}
-// 								if(allAxisEnabled) {
+								axisEnabled[i] = true;
+								for(int k = 1; k < nodes.size(); k++){
+									allAxisEnabled = axisEnabled[k] && axisEnabled[k-1];
+								}
+								if(allAxisEnabled) {
+									if(first){
+									std::cout << "all axis enabled" << std::endl;
+									first = false;
+									}
 									isEnabled.getSignal().setValue(true);
-// 								}
+								}
+								else{
+									isEnabled.getSignal().setValue(false);
+								}
 							}
 							else{
-// 								axisEnabled[i] = false;
-// 								allAxisEnabled = false;
-								isEnabled.getSignal().setValue(false);
+								axisEnabled[i] = false;
+								allAxisEnabled = false;
 							}
 						}
 					}
@@ -149,11 +155,11 @@ void CanReceiveFaulhaber::run()
 }*/
 
 void CanReceiveFaulhaber::enable(){
-	allAxisEnabled = true;
+	enabled = true;
 }
 
 void CanReceiveFaulhaber::disable(){
-	allAxisEnabled = false;
+	enabled = false;
 }
 
 Output<bool> CanReceiveFaulhaber::getOpEnabledOut(){

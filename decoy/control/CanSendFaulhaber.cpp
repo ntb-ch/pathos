@@ -11,6 +11,10 @@ CanSendFaulhaber::CanSendFaulhaber(int sock, std::initializer_list<int> node): s
 		in.push_back(new Input<int>()); 
 	}
 	pdoRequested.getSignal().setValue(false);
+	std::cout << "canSend:" << std::endl;
+	for(int i = 0; i < lastPosValue.size(); i++){
+		std::cout << i << ": " << lastPosValue[i] << std::endl;
+	}
 }
 
 CanSendFaulhaber::~CanSendFaulhaber() {
@@ -33,7 +37,7 @@ void CanSendFaulhaber::run() {
 			}
 		}
 		stateCnt++;
-		if(stateCnt > 100){
+		if(stateCnt > 200){
 			for(int i = 0; i < in.size(); i++){
 				initiatePdoRequest(nodes[i], CANOPEN_FC_PDO1_TX);
 			}
@@ -64,6 +68,7 @@ void CanSendFaulhaber::initiatePdoRequest(int node, uint8_t function_code)
 {
 	err = canopen_pdo_request(sock, node, function_code);
 	if(err < 0){
+		std::cout << "err: " << err << std::endl;
 		throw eeros::EEROSException("failed to initiate pdo request");
 		return;
 	}

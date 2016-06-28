@@ -42,10 +42,12 @@ namespace eeros {
 			int sock;
 			canopen_frame_t readFrame;
 			int readLen;
-			bool allAxisEnabled = false;
+			bool enabled = false;
 			int debCnt = 0;
 			std::vector<bool> axisEnabled;
+			bool allAxisEnabled = false;
 			std::map<uint32_t, PdoUserData>::iterator mIt;
+			bool first = true;
 			
 		protected:
 			std::vector<eeros::control::Output<uint8_t>*> fcOut;

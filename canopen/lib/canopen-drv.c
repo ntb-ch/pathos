@@ -12,6 +12,7 @@
 #include "../include/canopen-drv.h"
 #include "../include/canopen.h"
 #include <stdio.h>
+#include <errno.h>
 
 
 int canopen_frame_fill_pdo_set_position(canopen_frame_t *frame, uint8_t function_code, uint8_t node, uint16_t control, uint32_t targetpos){
@@ -238,9 +239,17 @@ int canopen_pdo_request(int sock, uint8_t node, uint8_t function_code){
 		return -1;
 	}
 	
+	int errsv = 0;
 	int bytes_sent = write(sock, &can_frame, sizeof(can_frame));
+	errsv = errno;
 	if(bytes_sent < 0){
-		return -2;
+		if(bytes_sent == -1){
+			
+			return errsv;
+		}
+		else{
+			return -4;
+		}
 	}
 	if(bytes_sent < (int)sizeof(struct can_frame)){
 		return -3;
