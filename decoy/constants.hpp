@@ -11,7 +11,7 @@ namespace pathos {
 		static constexpr double pi = 3.14159265359;  // pi
 		static constexpr double g = 9.80665;         // gravity acc [m/s²]
 		
-		static constexpr double dt = 0.010;          // sample time
+		static constexpr double dt = 0.020;          // sample time
 		static constexpr int nofAxis = 5;
 		
 		// *** Can *** //

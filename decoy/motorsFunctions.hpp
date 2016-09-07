@@ -57,7 +57,7 @@ void set_motion_parameters(int socket){
 
 			throw eeros::EEROSException("set ramp failed");
 		}
-		if((err = set_max_speed_faulhaber(socket, nodes[i], 3000)) != 0){
+		if((err = set_max_speed_faulhaber(socket, nodes[i], 9000 /*3000*/)) != 0){
 			throw eeros::EEROSException("set max nodes failed");            
 		}
 	}
