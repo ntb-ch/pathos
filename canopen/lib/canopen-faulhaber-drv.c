@@ -18,12 +18,15 @@ int init_faulhaber_motor(int sock, int node)
 // 	if((err = canopen_sdo_download_exp(sock, node, controlWord, 0, 0x0008,        2)) != 0) {        
 // 		return err-20;                                                                        
 // 	}
+	/*if((err = canopen_sdo_download_exp(sock, node, controlWord, 0, 0x0000,        2)) != 0) {        
+		return err-20;                                                                        
+	}*/	
 	if((err = canopen_sdo_download_exp(sock, node, controlWord, 0, shutDown,        2)) != 0) {        
 		return err-20;                                                                        
 	}                                                                                         
 	if((err = canopen_sdo_download_exp(sock, node, controlWord, 0, switchOn,        2)) != 0) {        
 		return err-30;                                                                        
-	}                                                                                         
+	}                                                                                       
 	if((err = canopen_sdo_download_exp(sock, node, controlWord, 0, enableOperation, 2)) != 0) { 
 		return err-40;
 	}
@@ -75,6 +78,15 @@ int homing_faulhaber_motor(int sock, int node, int homingMethod)
 	return 0;
 }
 
+int set_profile_velocity_mode_faulhaber(int sock, int node){
+	int err = 0;
+	
+	//Velocity-mode	
+	if((err = canopen_sdo_download_exp(sock, node, switchModeOfOperation, 0, speedMode, 1)) != 0){
+		return err;
+	}
+}
+
 int set_position_profile_mode_faulhaber(int sock, int node)
 {
 	int err = 0;
@@ -90,6 +102,16 @@ int set_position_profile_mode_faulhaber(int sock, int node)
 // 	printf("mode: %d\n", data);
 	
 	return 0;
+}
+
+int set_interpolated_position_mode_drive(int sock, int node)
+{
+	int err = 0;
+	
+	//interpolated position mode
+	if((err = canopen_sdo_download_exp(sock, node, switchModeOfOperation, 0, interpolatedPositionMode, 1)) != 0){
+		return err;
+	}
 }
 
 int set_acc_dec_faulhaber(int sock, int node, int acc, int dec) 
@@ -112,7 +134,7 @@ int set_acc_dec_faulhaber(int sock, int node, int acc, int dec)
 	return 0;
 }
 
-int set_target_speed_faulhaber(int sock, int node, int speed) // speed in rpm
+int set_target_speed_faulhaber(int sock, int node, int32_t speed) // speed in rpm
 {
 	int err = 0;
 	
@@ -137,5 +159,42 @@ int set_max_speed_faulhaber(int sock, int node, int speed)    // speed in rpm
 		return err;
 	}
 
+	return 0;
+}
+
+int get_warning_drive(int sock, int node, uint32_t *warningData)
+{
+	int err = 0;
+	
+	if((err = canopen_sdo_upload_exp(sock, node, warning, 0, warningData)) != 0){
+		return err;
+	}
+		
+	return 0;
+}
+
+int get_status_drive(int sock, int node, uint32_t *status)
+{
+	int err = 0;
+	
+	if((err = canopen_sdo_upload_exp(sock, node, statusWord, 0, status)) != 0){
+		return err;
+	}
+		
+	return 0;
+}
+
+int configure_sync_drive(int sock, int node, uint32_t period, uint16_t limit){
+	int err = 0;
+	
+	if((err = canopen_sdo_download_exp(sock, node, comCyclePeriod, 0, period, 4)) != 0){
+		return err;
+	}
+	
+	err = 0;
+	if((err = canopen_sdo_download_exp(sock, node, syncControl, 4, limit, 2)) != 0){
+		return err;
+	}
+	
 	return 0;
 }

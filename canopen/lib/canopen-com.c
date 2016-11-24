@@ -27,6 +27,8 @@
 #include <stdint.h> 
 #include <stdio.h> 
 
+#include <errno.h>
+
 static int canopen_com_debug = 0;
 
 //------------------------------------------------------------------------------
@@ -78,19 +80,19 @@ canopen_frame_recv(int sock, canopen_frame_t *canopen_frame)
     if (nbytes < 0)
     {
         //perror("read: can raw socket read");
-        return 1;
+        return -1;
     }
 
     if (nbytes < (int)sizeof(struct can_frame))
     {
         fprintf(stderr, "read: incomplete CAN frame\n");
-        return 11;
+        return -11;
     }
 
     if (canopen_frame_parse(canopen_frame, &can_frame) != 0)
     {
         fprintf(stderr, "CANopen failed to parse frame\n");
-		return 111;
+		return -111;
     }
 
     return 0;
@@ -129,7 +131,7 @@ canopen_sdo_upload_exp(int sock, uint8_t node, uint16_t index,
     {
         if (canopen_frame_recv(sock, &canopen_frame) != 0)
         {
-            return 1;
+            return -1;
         }
 
         if (canopen_frame.id == node && canopen_frame.function_code == CANOPEN_FC_SDO_TX)
@@ -813,4 +815,36 @@ int send_nmt(int sock, int mode, int node)
     return 0;
 }
 
+int canopen_send_sync(int sock){
+	canopen_frame_t canopen_frame;
+    struct can_frame can_frame;
+	
+	if(canopen_frame_set_sync(&canopen_frame) != 0){
+		return -1;
+	}
+	if (canopen_frame_pack(&canopen_frame, &can_frame) != 0){
+		return -2;
+   	}
+   	
+   	int errsv = 0;
+	int bytes_sent = write(sock, &can_frame, sizeof(can_frame));
+	errsv = errno;
+	if(bytes_sent == -1){
+		printf("errno: %s\n", strerror(errsv));
+	}
+	if(bytes_sent < 0){
+		if(bytes_sent == -1){
+			
+			return errsv;
+		}
+		else{
+			return -3;
+		}
+	}
+	if(bytes_sent < (int)sizeof(struct can_frame)){
+		return -4;
+	}
+	
+	return 0;
+}
 

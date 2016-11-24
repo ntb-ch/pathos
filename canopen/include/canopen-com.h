@@ -47,6 +47,8 @@ int canopen_sdo_download_block(int sock, uint8_t node, uint16_t index, uint8_t s
 int canopen_frame_send(int sock, canopen_frame_t *canopen_frame);
 int canopen_frame_recv(int sock, canopen_frame_t *canopen_frame);
 
+int canopen_send_sync(int sock);
+
 int send_nmt(int sock, int mode, int node);
 
 #ifdef __cplusplus

@@ -18,6 +18,7 @@ extern "C" {
 	uint32_t homingMode            = 0x0006;
 	uint32_t positionMode          = 0x0001;
 	uint32_t speedMode             = 0x0003;
+	uint32_t interpolatedPositionMode = 0x0007;
 	
 	uint32_t profileAcceleration = 0x6083;
 	uint32_t profileDeceleration = 0x6084;
@@ -30,6 +31,10 @@ extern "C" {
 	
 	uint32_t setHomingSwitches = 0x2310;
 	uint32_t notifySwitch      = 0x2311;
+	
+	uint32_t warning = 0x3024;
+	uint32_t comCyclePeriod = 0x1006;
+	uint32_t syncControl = 0x2006;
 
 #ifdef __cplusplus
 }
