@@ -14,22 +14,41 @@ int init_faulhaber_motor(int sock, int node)
 {
 	int err = 0;
       
-	//TODO
-// 	if((err = canopen_sdo_download_exp(sock, node, controlWord, 0, 0x0008,        2)) != 0) {        
-// 		return err-20;                                                                        
-// 	}
-	/*if((err = canopen_sdo_download_exp(sock, node, controlWord, 0, 0x0000,        2)) != 0) {        
+	if((err = canopen_sdo_download_exp(sock, node, controlWord, 0, 0,               2)) != 0) {        
+		usleep(500000);
 		return err-20;                                                                        
-	}*/	
+	}
+	if((err = canopen_sdo_download_exp(sock, node, controlWord, 0, faultReset,      2)) != 0) {   
+		usleep(500000);
+		return err-20;                                                                        
+	}
+	if((err = canopen_sdo_download_exp(sock, node, controlWord, 0, 0,               2)) != 0) {       
+		return err-20;                                                                        
+	}
+	printf("send ctrl = 0");
+	usleep(5000);
+	if((err = canopen_sdo_download_exp(sock, node, controlWord, 0, faultReset,      2)) != 0) {   
+		return err-20;                                                                        
+	}
+	printf("send ctrl = faultReset");
+	usleep(5000);
+	if((err = canopen_sdo_download_exp(sock, node, controlWord, 0, 0,               2)) != 0) {        
+		return err-20;                                                                        
+	}
+	printf("send ctrl = 0");
+	usleep(5000);
 	if((err = canopen_sdo_download_exp(sock, node, controlWord, 0, shutDown,        2)) != 0) {        
 		return err-20;                                                                        
 	}                                                                                         
+	usleep(5000);
 	if((err = canopen_sdo_download_exp(sock, node, controlWord, 0, switchOn,        2)) != 0) {        
 		return err-30;                                                                        
 	}                                                                                       
+	usleep(5000);
 	if((err = canopen_sdo_download_exp(sock, node, controlWord, 0, enableOperation, 2)) != 0) { 
 		return err-40;
 	}
+	usleep(5000);
 
 	return 0;
 }
@@ -112,6 +131,7 @@ int set_interpolated_position_mode_drive(int sock, int node)
 	if((err = canopen_sdo_download_exp(sock, node, switchModeOfOperation, 0, interpolatedPositionMode, 1)) != 0){
 		return err;
 	}
+	// set submode
 }
 
 int set_acc_dec_faulhaber(int sock, int node, int acc, int dec) 
@@ -120,10 +140,10 @@ int set_acc_dec_faulhaber(int sock, int node, int acc, int dec)
 	
 	// Rampenspeed in rmp/s²
 	if(acc > 0 && acc < 30000 && dec > 0 && dec < 30000){
-		if((err = canopen_sdo_download_exp(sock, node, profileAcceleration, 0, acc, 0)) != 0){
+		if((err = canopen_sdo_download_exp(sock, node, profileAcceleration, 0, acc, 4)) != 0){
 			return err;
 		}
-		if((err = canopen_sdo_download_exp(sock, node, profileDeceleration, 0, dec, 0)) != 0){
+		if((err = canopen_sdo_download_exp(sock, node, profileDeceleration, 0, dec, 4)) != 0){
 			return err;
 		}
 	}
@@ -132,6 +152,14 @@ int set_acc_dec_faulhaber(int sock, int node, int acc, int dec)
 		return err;
 	}
 	return 0;
+}
+
+int set_target_speed_profile_position(int sock, int node, uint32_t speed){
+	int err = 0;
+	
+	if((err = canopen_sdo_download_exp(sock, node, 0x6081, 0, speed, 4)) != 0){
+			return err;
+	}
 }
 
 int set_target_speed_faulhaber(int sock, int node, int32_t speed) // speed in rpm
@@ -155,7 +183,7 @@ int set_max_speed_faulhaber(int sock, int node, int speed)    // speed in rpm
 	int err = 0;
 	
 	// Set max velocity
-	if((err = canopen_sdo_download_exp(sock, node, maxAllowedSpeed, 0, speed, 0)) != 0){
+	if((err = canopen_sdo_download_exp(sock, node, maxAllowedSpeed, 0, speed, 4)) != 0){
 		return err;
 	}
 
@@ -196,5 +224,14 @@ int configure_sync_drive(int sock, int node, uint32_t period, uint16_t limit){
 		return err;
 	}
 	
+	return 0;
+}
+
+int set_ip_submode(int sock, int node, int16_t submode){
+	int err = 0;
+	
+	if((err = canopen_sdo_download_exp(sock, node, 0x60C0, 0, submode, 2)) != 0){
+		return err;
+	}
 	return 0;
 }

@@ -817,7 +817,7 @@ int send_nmt(int sock, int mode, int node)
 
 int canopen_send_sync(int sock){
 	canopen_frame_t canopen_frame;
-    struct can_frame can_frame;
+        struct can_frame can_frame;
 	
 	if(canopen_frame_set_sync(&canopen_frame) != 0){
 		return -1;
@@ -828,6 +828,7 @@ int canopen_send_sync(int sock){
    	
    	int errsv = 0;
 	int bytes_sent = write(sock, &can_frame, sizeof(can_frame));
+// 	printf("sync = %d, size = %d\n\r", canopen_frame.id, sizeof(can_frame));
 	errsv = errno;
 	if(bytes_sent == -1){
 		printf("errno: %s\n", strerror(errsv));

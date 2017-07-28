@@ -19,8 +19,11 @@ int set_position_profile_mode_faulhaber(int sock, int node);
 int set_profile_velocity_mode_faulhaber(int sock, int node);
 int set_interpolated_position_mode_drive(int sock, int node);
 
+int set_ip_submode(int sock, int node, int16_t submode);
+
 // set motion parameters
 int set_acc_dec_faulhaber(int sock, int node, int acc, int dec);
+int set_target_speed_profile_position(int sock, int node, uint32_t speed);
 int set_target_speed_faulhaber(int sock, int node, int32_t speed);
 int set_max_speed_faulhaber(int sock, int node, int speed);
 

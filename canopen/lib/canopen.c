@@ -167,6 +167,7 @@ canopen_frame_pack(canopen_frame_t *canopen_frame, struct can_frame *can_frame)
 
     if (canopen_frame->rtr == CANOPEN_FLAG_RTR)
     {
+// 		printf("rtr\n");
         can_frame->can_id |= CAN_RTR_FLAG;  // set RTR frame flag
     }
     
@@ -1097,6 +1098,7 @@ int canopen_frame_set_sync(canopen_frame_t *frame){
 	frame->rtr = CANOPEN_FLAG_NORMAL;
 	frame->function_code = CANOPEN_FC_SYNC;
 	frame->type = CANOPEN_FLAG_STANDARD;
+	frame->id = 0;
 	
 	frame->data_len = 0;
 	return 0;

@@ -10,7 +10,7 @@ extern "C" {
 	uint16_t controlWord      = 0x6040;
 	uint32_t shutDown         = 0x0006;
 	uint32_t switchOn         = 0x0007;
-	uint32_t faultReset       = 0x0008;
+	uint32_t faultReset       = 0x0080;
 	uint32_t enableOperation  = 0x000F;
 	uint32_t enOp_startHoming = 0x001F; 
 
